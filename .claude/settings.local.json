@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:supabase.com)",
+      "Bash(pip install:*)",
+      "Bash(python3:*)",
+      "Bash(/c/Users/Mr/AppData/Local/Programs/Python/Python313/python.exe:*)",
+      "Bash(PYTHONUTF8=1 /c/Users/Mr/AppData/Local/Programs/Python/Python313/python.exe:*)",
+      "Bash(npm install:*)",
+      "Bash(npx shadcn@latest:*)",
+      "Bash(mkdir:*)",
+      "Bash(npx tsc:*)",
+      "Bash(rm:*)",
+      "Bash(timeout 15 npx next:*)",
+      "Bash(ls:*)",
+      "Bash(find C:\\\\Users\\\\Mr\\\\Desktop\\\\Library\\\\src\\\\app\\\\\\(dashboard\\)\\\\reports:*)",
+      "Bash(find C:\\\\Users\\\\Mr\\\\Desktop\\\\Library\\\\src\\\\app\\\\\\(dashboard\\)\\\\settings:*)",
+      "Bash(find C:\\\\Users\\\\Mr\\\\Desktop\\\\Library\\\\src\\\\app\\\\\\(dashboard\\)\\\\settings\\\\_components:*)",
+      "Bash(find C:\\\\Users\\\\Mr\\\\Desktop\\\\Library\\\\src\\\\app\\\\\\(dashboard\\):*)",
+      "Bash(find C:\\\\Users\\\\Mr\\\\Desktop\\\\Library\\\\src\\\\app\\\\\\(dashboard\\)\\\\sales:*)",
+      "Bash(xargs grep:*)",
+      "Bash(node:*)"
+    ]
+  }
+}
