@@ -49,12 +49,11 @@ export function SalesChart({ data }: SalesChartProps) {
           tickFormatter={(v) => `${v}`}
         />
         <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 12 }} />
-        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         <Tooltip
-          formatter={((value: any, name: any) =>
+          formatter={(value, name) =>
             name === "revenue"
               ? formatCurrency(Number(value))
-              : String(value)) as any}
+              : String(value ?? 0)}
           labelFormatter={(label) => `Date: ${label}`}
         />
         <Bar

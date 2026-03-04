@@ -15,7 +15,7 @@ import { formatCurrency, formatDateTime, formatSaleNumber } from "@/lib/utils/fo
 import Link from "next/link";
 
 export default async function DashboardPage() {
-  const user = await getAuthUser();
+  await getAuthUser();
   const supabase = await createClient();
 
   const today = new Date().toISOString().split("T")[0];

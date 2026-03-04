@@ -49,7 +49,7 @@ export function CategoryTree({ categories, role }: CategoryTreeProps) {
         <ParentCategory
           key={parent.id}
           category={parent}
-          children={childrenMap.get(parent.id) || []}
+          subcategories={childrenMap.get(parent.id) || []}
           parentCategories={parents}
           isAdmin={isAdmin}
         />
@@ -60,12 +60,12 @@ export function CategoryTree({ categories, role }: CategoryTreeProps) {
 
 function ParentCategory({
   category,
-  children,
+  subcategories,
   parentCategories,
   isAdmin,
 }: {
   category: Category;
-  children: Category[];
+  subcategories: Category[];
   parentCategories: Category[];
   isAdmin: boolean;
 }) {
@@ -91,7 +91,7 @@ function ParentCategory({
           )}
           {category.name}
           <Badge variant="secondary" className="ml-2">
-            {children.length}
+            {subcategories.length}
           </Badge>
         </button>
         {isAdmin && (
@@ -101,9 +101,9 @@ function ParentCategory({
           />
         )}
       </div>
-      {expanded && children.length > 0 && (
+      {expanded && subcategories.length > 0 && (
         <div className="border-t bg-muted/30 px-3 py-2">
-          {children.map((child) => (
+          {subcategories.map((child) => (
             <div
               key={child.id}
               className="flex items-center justify-between rounded-md px-4 py-2 hover:bg-muted/50"

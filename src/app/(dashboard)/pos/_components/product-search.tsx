@@ -8,7 +8,7 @@ import { formatCurrency } from "@/lib/utils/format";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
-import { toast } from "sonner";
+
 
 interface Product {
   id: string;
