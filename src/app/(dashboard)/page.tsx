@@ -13,10 +13,12 @@ import { Badge } from "@/components/ui/badge";
 import { DollarSign, ShoppingCart, Printer, AlertTriangle } from "lucide-react";
 import { formatCurrency, formatDateTime, formatSaleNumber } from "@/lib/utils/format";
 import Link from "next/link";
+import { getTranslations } from "@/lib/i18n/t-server";
 
 export default async function DashboardPage() {
   await getAuthUser();
   const supabase = await createClient();
+  const t = await getTranslations("dashboard");
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -50,35 +52,35 @@ export default async function DashboardPage() {
 
   const kpis = [
     {
-      title: "Today's Sales",
+      title: t.todaysSales,
       value: formatCurrency(todaySales?.total_revenue || 0),
       icon: DollarSign,
-      description: "Total revenue today",
+      description: t.totalRevenueToday,
     },
     {
-      title: "Transactions Today",
+      title: t.transactionsToday,
       value: String(todaySales?.transaction_count || 0),
       icon: ShoppingCart,
-      description: "Completed sales",
+      description: t.completedSales,
     },
     {
-      title: "Pending Print Orders",
+      title: t.pendingPrintOrders,
       value: String(pendingPrintCount),
       icon: Printer,
-      description: "Awaiting completion",
+      description: t.awaitingCompletion,
     },
     {
-      title: "Low Stock Items",
+      title: t.lowStockItems,
       value: String(lowStockCount),
       icon: AlertTriangle,
-      description: "Below threshold",
+      description: t.belowThreshold,
       alert: lowStockCount > 0,
     },
   ];
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Dashboard</h1>
+      <h1 className="text-3xl font-bold">{t.title}</h1>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {kpis.map((kpi) => {
@@ -110,14 +112,14 @@ export default async function DashboardPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Recent Sales</CardTitle>
+          <CardTitle>{t.recentSales}</CardTitle>
         </CardHeader>
         <CardContent>
           {recentSales.length === 0 ? (
             <p className="py-8 text-center text-muted-foreground">
-              No sales yet. Make your first sale from the{" "}
+              {t.noSalesYet}{" "}
               <Link href="/pos" className="underline">
-                POS
+                {t.posLink}
               </Link>
               .
             </p>
@@ -125,11 +127,11 @@ export default async function DashboardPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Sale #</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Payment</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
+                  <TableHead>{t.saleNumber}</TableHead>
+                  <TableHead>{t.date}</TableHead>
+                  <TableHead>{t.payment}</TableHead>
+                  <TableHead>{t.status}</TableHead>
+                  <TableHead className="text-right">{t.total}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

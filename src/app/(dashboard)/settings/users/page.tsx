@@ -6,9 +6,6 @@ export default async function UserManagementPage() {
   const currentUser = await requireAdmin();
   const users = await getUsers();
 
-  return (
-    <div className="space-y-4">
-      <UsersClient users={users} currentUserId={currentUser.id} />
-    </div>
-  );
+  return <UsersClient users={users} currentUserId={currentUser.id} />;
 }
+

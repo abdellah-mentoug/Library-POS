@@ -3,6 +3,8 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { voidSale } from "@/lib/actions/sales";
+import { useTranslations } from "@/lib/i18n/use-translations";
+import { interpolate } from "@/lib/i18n/locales";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,6 +30,8 @@ export function VoidSaleDialog({
   open,
   onOpenChange,
 }: VoidSaleDialogProps) {
+  const t = useTranslations("sales");
+  const tc = useTranslations("common");
   const router = useRouter();
   const [reason, setReason] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -38,12 +42,12 @@ export function VoidSaleDialog({
     startTransition(async () => {
       try {
         await voidSale(saleId, reason);
-        toast.success(`Sale ${saleNumber} voided`);
+        toast.success(interpolate(t.saleVoided, { number: saleNumber }));
         onOpenChange(false);
         router.refresh();
       } catch (err) {
         toast.error(
-          err instanceof Error ? err.message : "Failed to void sale"
+          err instanceof Error ? err.message : t.voidFailed
         );
       }
     });
@@ -53,20 +57,19 @@ export function VoidSaleDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Void Sale {saleNumber}</DialogTitle>
+          <DialogTitle>{interpolate(t.voidSaleTitle, { number: saleNumber })}</DialogTitle>
           <DialogDescription>
-            This will mark the sale as voided and restore all stock quantities.
-            This action cannot be undone.
+            {t.voidWarning}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="reason">Reason for voiding *</Label>
+            <Label htmlFor="reason">{t.voidReason}</Label>
             <Textarea
               id="reason"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              placeholder="Enter the reason for voiding this sale..."
+              placeholder={t.voidReasonPlaceholder}
               disabled={isPending}
             />
           </div>
@@ -76,14 +79,14 @@ export function VoidSaleDialog({
               onClick={() => onOpenChange(false)}
               disabled={isPending}
             >
-              Cancel
+              {tc.cancel}
             </Button>
             <Button
               variant="destructive"
               onClick={handleVoid}
               disabled={isPending || !reason.trim()}
             >
-              {isPending ? "Voiding..." : "Void Sale"}
+              {isPending ? t.voiding : t.voidSale}
             </Button>
           </div>
         </div>

@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { CreditCard } from "lucide-react";
+import { useTranslations } from "@/lib/i18n/use-translations";
+import { interpolate } from "@/lib/i18n/locales";
 
 interface PaymentButtonProps {
   orderId: string;
@@ -20,6 +22,8 @@ interface PaymentButtonProps {
 
 export function PaymentButton({ orderId }: PaymentButtonProps) {
   const router = useRouter();
+  const t = useTranslations("printOrders");
+  const tc = useTranslations("common");
   const [isPending, startTransition] = useTransition();
   const [paymentMethod, setPaymentMethod] = useState<
     "cash" | "card" | "transfer"
@@ -29,11 +33,11 @@ export function PaymentButton({ orderId }: PaymentButtonProps) {
     startTransition(async () => {
       try {
         const result = await convertPrintOrderToSale(orderId, paymentMethod);
-        toast.success(`Payment collected! Sale #${result.saleNumber}`);
+        toast.success(interpolate(t.paymentCollected, { number: result.saleNumber }));
         router.refresh();
       } catch (err) {
         toast.error(
-          err instanceof Error ? err.message : "Failed to collect payment"
+          err instanceof Error ? err.message : t.paymentFailed
         );
       }
     });
@@ -51,9 +55,9 @@ export function PaymentButton({ orderId }: PaymentButtonProps) {
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="cash">Cash</SelectItem>
-          <SelectItem value="card">Card</SelectItem>
-          <SelectItem value="transfer">Transfer</SelectItem>
+          <SelectItem value="cash">{t.cash}</SelectItem>
+          <SelectItem value="card">{t.card}</SelectItem>
+          <SelectItem value="transfer">{t.transfer}</SelectItem>
         </SelectContent>
       </Select>
       <Button
@@ -62,7 +66,7 @@ export function PaymentButton({ orderId }: PaymentButtonProps) {
         disabled={isPending}
       >
         <CreditCard className="mr-2 h-4 w-4" />
-        {isPending ? "Processing..." : "Collect Payment"}
+        {isPending ? tc.processing : t.collectPayment}
       </Button>
     </div>
   );

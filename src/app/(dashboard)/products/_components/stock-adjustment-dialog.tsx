@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 interface StockAdjustmentDialogProps {
   productId: string;
@@ -35,6 +36,8 @@ export function StockAdjustmentDialog({
   currentStock,
   trigger,
 }: StockAdjustmentDialogProps) {
+  const t = useTranslations("products");
+  const tc = useTranslations("common");
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -63,7 +66,7 @@ export function StockAdjustmentDialog({
       if (result && "error" in result && result.error) {
         setError(result.error as string);
       } else {
-        toast.success("Stock adjusted");
+        toast.success(t.stockAdjusted);
         setOpen(false);
       }
     });
@@ -74,30 +77,30 @@ export function StockAdjustmentDialog({
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Adjust Stock: {productName}</DialogTitle>
+          <DialogTitle>{t.adjustStock}: {productName}</DialogTitle>
         </DialogHeader>
         <p className="text-sm text-muted-foreground">
-          Current stock: <strong>{currentStock}</strong>
+          {t.currentStock}: <strong>{currentStock}</strong>
         </p>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="reason">Reason *</Label>
+            <Label htmlFor="reason">{t.reason}</Label>
             <Select name="reason" required>
               <SelectTrigger>
-                <SelectValue placeholder="Select reason" />
+                <SelectValue placeholder={t.reason} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="adjustment_add">Add Stock</SelectItem>
-                <SelectItem value="adjustment_remove">Remove Stock</SelectItem>
-                <SelectItem value="stocktake">Stocktake</SelectItem>
-                <SelectItem value="return">Customer Return</SelectItem>
-                <SelectItem value="damaged">Damaged</SelectItem>
+                <SelectItem value="adjustment_add">{t.adjustmentAdd}</SelectItem>
+                <SelectItem value="adjustment_remove">{t.adjustmentRemove}</SelectItem>
+                <SelectItem value="stocktake">{t.stocktake}</SelectItem>
+                <SelectItem value="return">{t.returnStock}</SelectItem>
+                <SelectItem value="damaged">{t.damaged}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="quantity">Quantity *</Label>
+            <Label htmlFor="quantity">{t.quantity} *</Label>
             <Input
               id="quantity"
               name="quantity"
@@ -109,7 +112,7 @@ export function StockAdjustmentDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">Notes</Label>
+            <Label htmlFor="notes">{tc.notes}</Label>
             <Textarea id="notes" name="notes" disabled={isPending} />
           </div>
 
@@ -120,7 +123,7 @@ export function StockAdjustmentDialog({
           )}
 
           <Button type="submit" className="w-full" disabled={isPending}>
-            {isPending ? "Adjusting..." : "Adjust Stock"}
+            {isPending ? tc.processing : t.adjustStock}
           </Button>
         </form>
       </DialogContent>

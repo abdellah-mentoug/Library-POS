@@ -1,6 +1,7 @@
 import { getAuthUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PrintOrderReportClient } from "./print-order-report-client";
+import { getTranslations } from "@/lib/i18n/t-server";
 
 export default async function PrintOrderReportPage({
   searchParams,
@@ -19,6 +20,8 @@ export default async function PrintOrderReportPage({
   const start = params.start || thirtyDaysAgo;
   const end = params.end || today;
 
+  const t = await getTranslations("reports");
+
   const { data } = await supabase
     .from("v_print_order_summary")
     .select("*")
@@ -28,7 +31,7 @@ export default async function PrintOrderReportPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Print Order Report</h1>
+      <h1 className="text-3xl font-bold">{t.printOrderReport}</h1>
       <PrintOrderReportClient data={data || []} />
     </div>
   );

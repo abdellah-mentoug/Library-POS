@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { DateRangePicker } from "../_components/date-range-picker";
 import { ExportButtons } from "../_components/export-buttons";
 import { formatCurrency, formatDate } from "@/lib/utils/format";
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 interface PrintOrderSummary {
   order_date: string;
@@ -29,6 +30,8 @@ interface Props {
 }
 
 export function PrintOrderReportClient({ data }: Props) {
+  const t = useTranslations("reports");
+
   const totalOrders = data.reduce((sum, r) => sum + r.order_count, 0);
   const totalValue = data.reduce((sum, r) => sum + r.total_value, 0);
   const totalPaid = data.reduce((sum, r) => sum + r.paid_value, 0);
@@ -48,7 +51,7 @@ export function PrintOrderReportClient({ data }: Props) {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+            <CardTitle className="text-sm font-medium">{t.totalOrders}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalOrders}</div>
@@ -56,7 +59,7 @@ export function PrintOrderReportClient({ data }: Props) {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Total Value</CardTitle>
+            <CardTitle className="text-sm font-medium">{t.totalValue}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -66,7 +69,7 @@ export function PrintOrderReportClient({ data }: Props) {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Paid</CardTitle>
+            <CardTitle className="text-sm font-medium">{t.paid}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
@@ -76,7 +79,7 @@ export function PrintOrderReportClient({ data }: Props) {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Unpaid</CardTitle>
+            <CardTitle className="text-sm font-medium">{t.unpaid}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-orange-600">

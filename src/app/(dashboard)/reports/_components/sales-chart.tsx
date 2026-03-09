@@ -10,6 +10,8 @@ import {
   ComposedChart,
 } from "recharts";
 import { formatCurrency } from "@/lib/utils/format";
+import { useTranslations } from "@/lib/i18n/use-translations";
+import { interpolate } from "@/lib/i18n/locales";
 
 interface DailySale {
   sale_date: string;
@@ -22,10 +24,11 @@ interface SalesChartProps {
 }
 
 export function SalesChart({ data }: SalesChartProps) {
+  const t = useTranslations("reports");
   if (data.length === 0) {
     return (
       <div className="flex h-[300px] items-center justify-center text-muted-foreground">
-        No sales data for this period.
+        {t.noData}
       </div>
     );
   }
@@ -54,7 +57,7 @@ export function SalesChart({ data }: SalesChartProps) {
             name === "revenue"
               ? formatCurrency(Number(value))
               : String(value ?? 0)}
-          labelFormatter={(label) => `Date: ${label}`}
+          labelFormatter={(label) => interpolate(t.dateLabel, { label })}
         />
         <Bar
           yAxisId="left"

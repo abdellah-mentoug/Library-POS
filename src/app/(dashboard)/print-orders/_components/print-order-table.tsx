@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowUpDown, Eye } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 export interface PrintOrder {
   id: string;
@@ -37,14 +38,7 @@ interface PrintOrderTableProps {
   orders: PrintOrder[];
 }
 
-const STATUS_TABS = [
-  { value: "all", label: "All" },
-  { value: "registered", label: "Registered" },
-  { value: "in_progress", label: "In Progress" },
-  { value: "ready", label: "Ready" },
-  { value: "delivered", label: "Delivered" },
-  { value: "cancelled", label: "Cancelled" },
-] as const;
+// STATUS_TABS moved inside component to use translations
 
 function capitalizeFirst(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -56,8 +50,19 @@ function truncate(str: string, maxLength: number): string {
 }
 
 export function PrintOrderTable({ orders }: PrintOrderTableProps) {
+  const t = useTranslations("printOrders");
+  const tc = useTranslations("common");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  const STATUS_TABS = [
+    { value: "all", label: tc.all },
+    { value: "registered", label: t.registered },
+    { value: "in_progress", label: t.inProgress },
+    { value: "ready", label: t.ready },
+    { value: "delivered", label: t.delivered },
+    { value: "cancelled", label: t.cancelled },
+  ] as const;
 
   const filteredOrders = useMemo(() => {
     let result = orders;
@@ -81,7 +86,7 @@ export function PrintOrderTable({ orders }: PrintOrderTableProps) {
   const columns: ColumnDef<PrintOrder>[] = [
     {
       accessorKey: "order_number",
-      header: "Order #",
+      header: t.orderNumber,
       cell: ({ row }) => (
         <span className="font-mono text-sm">
           {formatPrintOrderNumber(row.original.order_number)}
@@ -90,11 +95,11 @@ export function PrintOrderTable({ orders }: PrintOrderTableProps) {
     },
     {
       accessorKey: "customer_name",
-      header: "Customer",
+      header: t.customer,
     },
     {
       accessorKey: "service_type",
-      header: "Service",
+      header: t.service,
       cell: ({ row }) => (
         <Badge variant="secondary">
           {capitalizeFirst(row.original.service_type)}
@@ -103,7 +108,7 @@ export function PrintOrderTable({ orders }: PrintOrderTableProps) {
     },
     {
       accessorKey: "description",
-      header: "Description",
+      header: tc.description,
       cell: ({ row }) => (
         <span className="text-sm text-muted-foreground" title={row.original.description}>
           {truncate(row.original.description, 40)}
@@ -118,7 +123,7 @@ export function PrintOrderTable({ orders }: PrintOrderTableProps) {
           className="w-full justify-end"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Total
+          {t.total}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -130,21 +135,21 @@ export function PrintOrderTable({ orders }: PrintOrderTableProps) {
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: t.status,
       cell: ({ row }) => (
         <PrintOrderStatusBadge status={row.original.status} />
       ),
     },
     {
       accessorKey: "is_paid",
-      header: "Payment",
+      header: t.paymentStatus,
       cell: ({ row }) =>
         row.original.is_paid ? (
           <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
-            Paid
+            {t.paid}
           </Badge>
         ) : (
-          <Badge variant="outline">Unpaid</Badge>
+          <Badge variant="outline">{t.unpaid}</Badge>
         ),
     },
     {
@@ -154,7 +159,7 @@ export function PrintOrderTable({ orders }: PrintOrderTableProps) {
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Due Date
+          {t.dueDateCol}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -172,7 +177,7 @@ export function PrintOrderTable({ orders }: PrintOrderTableProps) {
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Created
+          {t.createdCol}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -188,7 +193,7 @@ export function PrintOrderTable({ orders }: PrintOrderTableProps) {
         <Button variant="ghost" size="sm" asChild>
           <Link href={`/print-orders/${row.original.id}`}>
             <Eye className="mr-1 h-4 w-4" />
-            View
+            {tc.view}
           </Link>
         </Button>
       ),
@@ -213,7 +218,7 @@ export function PrintOrderTable({ orders }: PrintOrderTableProps) {
         </Tabs>
 
         <SearchInput
-          placeholder="Search by customer or order #..."
+          placeholder={t.searchPlaceholder}
           value={search}
           onChange={setSearch}
           className="w-64"

@@ -5,6 +5,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { createClient } from "@/lib/supabase/client";
 import { useCartStore } from "@/lib/store/cart-store";
 import { formatCurrency } from "@/lib/utils/format";
+import { useTranslations } from "@/lib/i18n/use-translations";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
@@ -21,6 +22,7 @@ interface Product {
 }
 
 export function ProductSearch() {
+  const t = useTranslations("pos");
   const [query, setQuery] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
@@ -79,7 +81,7 @@ export function ProductSearch() {
       <div className="relative mb-4">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="Search products by name or barcode..."
+          placeholder={t.searchPlaceholder}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="pl-9"
@@ -93,7 +95,7 @@ export function ProductSearch() {
           </div>
         ) : products.length === 0 ? (
           <p className="p-4 text-center text-muted-foreground">
-            No products found
+            {t.noProductsFound}
           </p>
         ) : (
           <div className="grid grid-cols-2 gap-2 lg:grid-cols-3">

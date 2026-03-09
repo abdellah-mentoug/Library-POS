@@ -14,6 +14,7 @@ import { MoreHorizontal, Pencil, UserX, UserCheck } from "lucide-react";
 import { formatDate } from "@/lib/utils/format";
 import { updateProfile } from "@/lib/actions/auth-actions";
 import { toast } from "sonner";
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 interface User {
   id: string;
@@ -31,6 +32,9 @@ interface UserTableProps {
 }
 
 export function UserTable({ users, currentUserId, onEdit }: UserTableProps) {
+  const t = useTranslations("settings");
+  const tc = useTranslations("common");
+
   async function toggleActive(user: User) {
     const result = await updateProfile(user.id, {
       is_active: !user.is_active,
@@ -39,7 +43,7 @@ export function UserTable({ users, currentUserId, onEdit }: UserTableProps) {
       toast.error(result.error as string);
     } else {
       toast.success(
-        user.is_active ? "User deactivated" : "User activated"
+        user.is_active ? t.userDeactivated : t.userActivated
       );
     }
   }
@@ -47,30 +51,29 @@ export function UserTable({ users, currentUserId, onEdit }: UserTableProps) {
   const columns: ColumnDef<User>[] = [
     {
       accessorKey: "full_name",
-      header: "Name",
+      header: t.name,
       cell: ({ row }) => (
         <span className="font-medium">{row.original.full_name}</span>
       ),
     },
     {
       accessorKey: "email",
-      header: "Email",
+      header: t.email,
     },
     {
       accessorKey: "role",
-      header: "Role",
+      header: t.role,
       cell: ({ row }) => (
         <Badge
           variant={row.original.role === "admin" ? "default" : "secondary"}
-          className="capitalize"
         >
-          {row.original.role}
+          {row.original.role === "admin" ? t.admin : t.employee}
         </Badge>
       ),
     },
     {
       accessorKey: "is_active",
-      header: "Status",
+      header: t.status,
       cell: ({ row }) => (
         <Badge
           variant={row.original.is_active ? "default" : "destructive"}
@@ -78,13 +81,13 @@ export function UserTable({ users, currentUserId, onEdit }: UserTableProps) {
             row.original.is_active ? "bg-green-100 text-green-800" : ""
           }
         >
-          {row.original.is_active ? "Active" : "Inactive"}
+          {row.original.is_active ? tc.active : tc.inactive}
         </Badge>
       ),
     },
     {
       accessorKey: "created_at",
-      header: "Created",
+      header: t.created,
       cell: ({ row }) => formatDate(row.original.created_at),
     },
     {
@@ -102,19 +105,19 @@ export function UserTable({ users, currentUserId, onEdit }: UserTableProps) {
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => onEdit(user)}>
                 <Pencil className="mr-2 h-4 w-4" />
-                Edit
+                {tc.edit}
               </DropdownMenuItem>
               {!isSelf && (
                 <DropdownMenuItem onClick={() => toggleActive(user)}>
                   {user.is_active ? (
                     <>
                       <UserX className="mr-2 h-4 w-4" />
-                      Deactivate
+                      {t.deactivate}
                     </>
                   ) : (
                     <>
                       <UserCheck className="mr-2 h-4 w-4" />
-                      Activate
+                      {t.activate}
                     </>
                   )}
                 </DropdownMenuItem>

@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
+import { useTranslations } from "@/lib/i18n/use-translations";
+import { interpolate } from "@/lib/i18n/locales";
 
 interface SaleItem {
   id: string;
@@ -73,6 +75,7 @@ function PrintStatusBadge({ status }: { status: string }) {
 }
 
 export function PurchaseHistory({ sales, printOrders }: PurchaseHistoryProps) {
+  const t = useTranslations("customers");
   const totalSpent = sales
     .filter((s) => s.status === "completed")
     .reduce((sum, s) => sum + s.total, 0);
@@ -85,15 +88,15 @@ export function PurchaseHistory({ sales, printOrders }: PurchaseHistoryProps) {
     <div className="space-y-4">
       <div className="grid grid-cols-3 gap-4">
         <div className="rounded-lg border p-4">
-          <p className="text-sm text-muted-foreground">Total Sales</p>
+          <p className="text-sm text-muted-foreground">{t.totalSales}</p>
           <p className="text-2xl font-bold">{sales.length}</p>
         </div>
         <div className="rounded-lg border p-4">
-          <p className="text-sm text-muted-foreground">Total Spent (Sales)</p>
+          <p className="text-sm text-muted-foreground">{t.totalSpent}</p>
           <p className="text-2xl font-bold">{formatCurrency(totalSpent)}</p>
         </div>
         <div className="rounded-lg border p-4">
-          <p className="text-sm text-muted-foreground">Print Orders</p>
+          <p className="text-sm text-muted-foreground">{t.printOrdersCount}</p>
           <p className="text-2xl font-bold">
             {printOrders.length} ({formatCurrency(totalPrintOrders)})
           </p>
@@ -102,27 +105,27 @@ export function PurchaseHistory({ sales, printOrders }: PurchaseHistoryProps) {
 
       <Tabs defaultValue="sales">
         <TabsList>
-          <TabsTrigger value="sales">Sales ({sales.length})</TabsTrigger>
+          <TabsTrigger value="sales">{interpolate(t.salesTab, { count: sales.length })}</TabsTrigger>
           <TabsTrigger value="print">
-            Print Orders ({printOrders.length})
+            {interpolate(t.printOrdersTab, { count: printOrders.length })}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="sales">
           {sales.length === 0 ? (
             <p className="py-8 text-center text-muted-foreground">
-              No purchase history yet.
+              {t.noPurchaseHistory}
             </p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Sale #</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Items</TableHead>
-                  <TableHead>Payment</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
+                  <TableHead>{t.saleNumber}</TableHead>
+                  <TableHead>{t.date}</TableHead>
+                  <TableHead>{t.items}</TableHead>
+                  <TableHead>{t.payment}</TableHead>
+                  <TableHead>{t.status}</TableHead>
+                  <TableHead className="text-right">{t.total}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -162,17 +165,17 @@ export function PurchaseHistory({ sales, printOrders }: PurchaseHistoryProps) {
         <TabsContent value="print">
           {printOrders.length === 0 ? (
             <p className="py-8 text-center text-muted-foreground">
-              No print orders yet.
+              {t.noPrintOrdersYet}
             </p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Order #</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Service</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
+                  <TableHead>{t.orderNumber}</TableHead>
+                  <TableHead>{t.date}</TableHead>
+                  <TableHead>{t.service}</TableHead>
+                  <TableHead>{t.status}</TableHead>
+                  <TableHead className="text-right">{t.total}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

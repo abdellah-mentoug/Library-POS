@@ -14,6 +14,7 @@ import {
 import { MoreHorizontal, Pencil, Trash2, Search } from "lucide-react";
 import { deleteSupplier } from "@/lib/actions/suppliers";
 import { toast } from "sonner";
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 interface Supplier {
   id: string;
@@ -31,6 +32,8 @@ interface SupplierTableProps {
 }
 
 export function SupplierTable({ suppliers, onEdit }: SupplierTableProps) {
+  const t = useTranslations("suppliers");
+  const tc = useTranslations("common");
   const [search, setSearch] = useState("");
 
   const filtered = useMemo(() => {
@@ -47,14 +50,14 @@ export function SupplierTable({ suppliers, onEdit }: SupplierTableProps) {
   const columns: ColumnDef<Supplier>[] = [
     {
       accessorKey: "name",
-      header: "Name",
+      header: tc.name,
       cell: ({ row }) => (
         <span className="font-medium">{row.original.name}</span>
       ),
     },
     {
       accessorKey: "contact_person",
-      header: "Contact Person",
+      header: t.contactPerson,
       cell: ({ row }) =>
         row.original.contact_person || (
           <span className="text-muted-foreground">—</span>
@@ -62,7 +65,7 @@ export function SupplierTable({ suppliers, onEdit }: SupplierTableProps) {
     },
     {
       accessorKey: "phone",
-      header: "Phone",
+      header: tc.phone,
       cell: ({ row }) =>
         row.original.phone || (
           <span className="text-muted-foreground">—</span>
@@ -70,7 +73,7 @@ export function SupplierTable({ suppliers, onEdit }: SupplierTableProps) {
     },
     {
       accessorKey: "email",
-      header: "Email",
+      header: tc.email,
       cell: ({ row }) =>
         row.original.email || (
           <span className="text-muted-foreground">—</span>
@@ -78,7 +81,7 @@ export function SupplierTable({ suppliers, onEdit }: SupplierTableProps) {
     },
     {
       accessorKey: "address",
-      header: "Address",
+      header: tc.address,
       cell: ({ row }) =>
         row.original.address ? (
           <span className="line-clamp-1 max-w-[200px]">
@@ -102,7 +105,7 @@ export function SupplierTable({ suppliers, onEdit }: SupplierTableProps) {
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => onEdit(supplier)}>
                 <Pencil className="mr-2 h-4 w-4" />
-                Edit
+                {tc.edit}
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="text-destructive"
@@ -111,12 +114,12 @@ export function SupplierTable({ suppliers, onEdit }: SupplierTableProps) {
                   if (result && "error" in result && result.error) {
                     toast.error(result.error as string);
                   } else {
-                    toast.success("Supplier deleted");
+                    toast.success(t.supplierDeleted);
                   }
                 }}
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete
+                {tc.delete}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -130,7 +133,7 @@ export function SupplierTable({ suppliers, onEdit }: SupplierTableProps) {
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="Search by name, contact, or phone..."
+          placeholder={t.searchPlaceholder}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-9"

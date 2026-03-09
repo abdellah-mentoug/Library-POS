@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { X } from "lucide-react";
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 interface Category {
   id: string;
@@ -36,6 +37,8 @@ export function ProductFilters({
   stockFilter,
   onStockChange,
 }: ProductFiltersProps) {
+  const t = useTranslations("products");
+  const tc = useTranslations("common");
   const hasFilters = search || categoryFilter !== "all" || stockFilter !== "all";
 
   const parents = categories.filter((c) => !c.parent_id);
@@ -57,7 +60,7 @@ export function ProductFilters({
   return (
     <div className="flex flex-wrap items-center gap-3">
       <SearchInput
-        placeholder="Search by name or barcode..."
+        placeholder={t.searchPlaceholder}
         value={search}
         onChange={onSearchChange}
         className="w-64"
@@ -65,10 +68,10 @@ export function ProductFilters({
 
       <Select value={categoryFilter} onValueChange={onCategoryChange}>
         <SelectTrigger className="w-48">
-          <SelectValue placeholder="All Categories" />
+          <SelectValue placeholder={t.allCategories} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Categories</SelectItem>
+          <SelectItem value="all">{t.allCategories}</SelectItem>
           {parents.map((parent) => (
             <div key={parent.id}>
               <SelectItem value={parent.id} className="font-medium">
@@ -86,20 +89,20 @@ export function ProductFilters({
 
       <Select value={stockFilter} onValueChange={onStockChange}>
         <SelectTrigger className="w-40">
-          <SelectValue placeholder="Stock Status" />
+          <SelectValue placeholder={t.allStock} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Stock</SelectItem>
-          <SelectItem value="in_stock">In Stock</SelectItem>
-          <SelectItem value="low_stock">Low Stock</SelectItem>
-          <SelectItem value="out_of_stock">Out of Stock</SelectItem>
+          <SelectItem value="all">{t.allStock}</SelectItem>
+          <SelectItem value="in_stock">{t.inStock}</SelectItem>
+          <SelectItem value="low_stock">{t.lowStock}</SelectItem>
+          <SelectItem value="out_of_stock">{t.outOfStock}</SelectItem>
         </SelectContent>
       </Select>
 
       {hasFilters && (
         <Button variant="ghost" size="sm" onClick={clearFilters}>
           <X className="mr-1 h-3 w-3" />
-          Clear
+          {tc.clear}
         </Button>
       )}
     </div>

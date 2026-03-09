@@ -14,6 +14,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 interface Supplier {
   id: string;
@@ -32,6 +33,8 @@ interface SupplierFormProps {
 }
 
 export function SupplierForm({ open, onOpenChange, supplier }: SupplierFormProps) {
+  const t = useTranslations("suppliers");
+  const tc = useTranslations("common");
   const mode = supplier ? "edit" : "create";
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -66,7 +69,7 @@ export function SupplierForm({ open, onOpenChange, supplier }: SupplierFormProps
         setError(result.error as string);
       } else {
         toast.success(
-          mode === "create" ? "Supplier created" : "Supplier updated"
+          mode === "create" ? t.supplierCreated : t.supplierUpdated
         );
         onOpenChange(false);
       }
@@ -78,12 +81,12 @@ export function SupplierForm({ open, onOpenChange, supplier }: SupplierFormProps
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>
-            {mode === "create" ? "Add Supplier" : "Edit Supplier"}
+            {mode === "create" ? t.addSupplier : t.editSupplier}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Name *</Label>
+            <Label htmlFor="name">{t.name}</Label>
             <Input
               id="name"
               name="name"
@@ -95,7 +98,7 @@ export function SupplierForm({ open, onOpenChange, supplier }: SupplierFormProps
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="contact_person">Contact Person</Label>
+              <Label htmlFor="contact_person">{t.contactPerson}</Label>
               <Input
                 id="contact_person"
                 name="contact_person"
@@ -105,7 +108,7 @@ export function SupplierForm({ open, onOpenChange, supplier }: SupplierFormProps
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone">{t.phone}</Label>
               <Input
                 id="phone"
                 name="phone"
@@ -116,7 +119,7 @@ export function SupplierForm({ open, onOpenChange, supplier }: SupplierFormProps
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t.email}</Label>
             <Input
               id="email"
               name="email"
@@ -127,7 +130,7 @@ export function SupplierForm({ open, onOpenChange, supplier }: SupplierFormProps
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="address">Address</Label>
+            <Label htmlFor="address">{t.address}</Label>
             <Input
               id="address"
               name="address"
@@ -137,7 +140,7 @@ export function SupplierForm({ open, onOpenChange, supplier }: SupplierFormProps
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">Notes</Label>
+            <Label htmlFor="notes">{t.notes}</Label>
             <Textarea
               id="notes"
               name="notes"
@@ -158,14 +161,14 @@ export function SupplierForm({ open, onOpenChange, supplier }: SupplierFormProps
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              {tc.cancel}
             </Button>
             <Button type="submit" disabled={isPending}>
               {isPending
-                ? "Saving..."
+                ? tc.saving
                 : mode === "create"
-                  ? "Add Supplier"
-                  : "Update Supplier"}
+                  ? t.addSupplier
+                  : t.updateSupplier}
             </Button>
           </div>
         </form>

@@ -17,6 +17,7 @@ import { MoreHorizontal, Eye, Pencil, Trash2, ArrowUpDown } from "lucide-react";
 import Link from "next/link";
 import { deleteProduct } from "@/lib/actions/products";
 import { toast } from "sonner";
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 interface Product {
   id: string;
@@ -42,6 +43,8 @@ interface ProductTableProps {
 }
 
 export function ProductTable({ products, categories, role }: ProductTableProps) {
+  const t = useTranslations("products");
+  const tc = useTranslations("common");
   const isAdmin = role === "admin";
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -92,25 +95,25 @@ export function ProductTable({ products, categories, role }: ProductTableProps) 
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Name
+          {tc.name}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
     },
     {
       accessorKey: "barcode",
-      header: "Barcode",
+      header: t.barcode,
       cell: ({ row }) =>
         row.original.barcode || (
-          <span className="text-muted-foreground">Not set</span>
+          <span className="text-muted-foreground">{tc.notSet}</span>
         ),
     },
     {
       id: "category",
-      header: "Category",
+      header: t.category,
       cell: ({ row }) =>
         row.original.categories?.name || (
-          <span className="text-muted-foreground">Uncategorized</span>
+          <span className="text-muted-foreground">{t.uncategorized}</span>
         ),
     },
     {
@@ -121,7 +124,7 @@ export function ProductTable({ products, categories, role }: ProductTableProps) 
           className="w-full justify-end"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Price
+          {t.price}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -139,7 +142,7 @@ export function ProductTable({ products, categories, role }: ProductTableProps) 
           className="w-full justify-end"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Stock
+          {t.stock}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -171,7 +174,7 @@ export function ProductTable({ products, categories, role }: ProductTableProps) 
               <DropdownMenuItem asChild>
                 <Link href={`/products/${product.id}`}>
                   <Eye className="mr-2 h-4 w-4" />
-                  View
+                  {tc.view}
                 </Link>
               </DropdownMenuItem>
               {isAdmin && (
@@ -179,7 +182,7 @@ export function ProductTable({ products, categories, role }: ProductTableProps) 
                   <DropdownMenuItem asChild>
                     <Link href={`/products/${product.id}/edit`}>
                       <Pencil className="mr-2 h-4 w-4" />
-                      Edit
+                      {tc.edit}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem
@@ -189,12 +192,12 @@ export function ProductTable({ products, categories, role }: ProductTableProps) 
                       if (result && "error" in result && result.error) {
                         toast.error(result.error as string);
                       } else {
-                        toast.success("Product deleted");
+                        toast.success(t.productDeleted);
                       }
                     }}
                   >
                     <Trash2 className="mr-2 h-4 w-4" />
-                    Delete
+                    {tc.delete}
                   </DropdownMenuItem>
                 </>
               )}

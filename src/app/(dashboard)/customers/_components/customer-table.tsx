@@ -15,6 +15,7 @@ import { MoreHorizontal, Eye, Pencil, Trash2, Search } from "lucide-react";
 import Link from "next/link";
 import { deleteCustomer } from "@/lib/actions/customers";
 import { toast } from "sonner";
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 interface Customer {
   id: string;
@@ -31,6 +32,8 @@ interface CustomerTableProps {
 }
 
 export function CustomerTable({ customers, role }: CustomerTableProps) {
+  const t = useTranslations("customers");
+  const tc = useTranslations("common");
   const isAdmin = role === "admin";
   const [search, setSearch] = useState("");
 
@@ -48,7 +51,7 @@ export function CustomerTable({ customers, role }: CustomerTableProps) {
   const columns: ColumnDef<Customer>[] = [
     {
       accessorKey: "name",
-      header: "Name",
+      header: tc.name,
       cell: ({ row }) => (
         <Link
           href={`/customers/${row.original.id}`}
@@ -60,7 +63,7 @@ export function CustomerTable({ customers, role }: CustomerTableProps) {
     },
     {
       accessorKey: "email",
-      header: "Email",
+      header: tc.email,
       cell: ({ row }) =>
         row.original.email || (
           <span className="text-muted-foreground">—</span>
@@ -68,7 +71,7 @@ export function CustomerTable({ customers, role }: CustomerTableProps) {
     },
     {
       accessorKey: "phone",
-      header: "Phone",
+      header: tc.phone,
       cell: ({ row }) =>
         row.original.phone || (
           <span className="text-muted-foreground">—</span>
@@ -76,7 +79,7 @@ export function CustomerTable({ customers, role }: CustomerTableProps) {
     },
     {
       accessorKey: "address",
-      header: "Address",
+      header: tc.address,
       cell: ({ row }) =>
         row.original.address ? (
           <span className="line-clamp-1 max-w-[200px]">
@@ -101,13 +104,13 @@ export function CustomerTable({ customers, role }: CustomerTableProps) {
               <DropdownMenuItem asChild>
                 <Link href={`/customers/${customer.id}`}>
                   <Eye className="mr-2 h-4 w-4" />
-                  View
+                  {tc.view}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href={`/customers/${customer.id}/edit`}>
                   <Pencil className="mr-2 h-4 w-4" />
-                  Edit
+                  {tc.edit}
                 </Link>
               </DropdownMenuItem>
               {isAdmin && (
@@ -118,12 +121,12 @@ export function CustomerTable({ customers, role }: CustomerTableProps) {
                     if (result && "error" in result && result.error) {
                       toast.error(result.error as string);
                     } else {
-                      toast.success("Customer deleted");
+                      toast.success(t.customerDeleted);
                     }
                   }}
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
+                  {tc.delete}
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>
@@ -138,7 +141,7 @@ export function CustomerTable({ customers, role }: CustomerTableProps) {
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="Search by name, email, or phone..."
+          placeholder={t.searchPlaceholder}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-9"

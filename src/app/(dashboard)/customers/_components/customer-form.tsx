@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 interface Customer {
   id: string;
@@ -27,6 +28,8 @@ interface CustomerFormProps {
 
 export function CustomerForm({ mode, customer }: CustomerFormProps) {
   const router = useRouter();
+  const t = useTranslations("customers");
+  const tc = useTranslations("common");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -59,7 +62,7 @@ export function CustomerForm({ mode, customer }: CustomerFormProps) {
         setError(result.error as string);
       } else {
         toast.success(
-          mode === "create" ? "Customer created" : "Customer updated"
+          mode === "create" ? t.customerCreated : t.customerUpdated
         );
         router.push("/customers");
       }
@@ -70,14 +73,14 @@ export function CustomerForm({ mode, customer }: CustomerFormProps) {
     <Card>
       <CardHeader>
         <CardTitle>
-          {mode === "create" ? "New Customer" : "Edit Customer"}
+          {mode === "create" ? t.newCustomer : t.editCustomer}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="name">Name *</Label>
+              <Label htmlFor="name">{t.name}</Label>
               <Input
                 id="name"
                 name="name"
@@ -88,7 +91,7 @@ export function CustomerForm({ mode, customer }: CustomerFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t.email}</Label>
               <Input
                 id="email"
                 name="email"
@@ -99,7 +102,7 @@ export function CustomerForm({ mode, customer }: CustomerFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone">{t.phone}</Label>
               <Input
                 id="phone"
                 name="phone"
@@ -109,7 +112,7 @@ export function CustomerForm({ mode, customer }: CustomerFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="address">Address</Label>
+              <Label htmlFor="address">{t.address}</Label>
               <Input
                 id="address"
                 name="address"
@@ -120,7 +123,7 @@ export function CustomerForm({ mode, customer }: CustomerFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">Notes</Label>
+            <Label htmlFor="notes">{t.notes}</Label>
             <Textarea
               id="notes"
               name="notes"
@@ -138,17 +141,17 @@ export function CustomerForm({ mode, customer }: CustomerFormProps) {
           <div className="flex gap-3">
             <Button type="submit" disabled={isPending}>
               {isPending
-                ? "Saving..."
+                ? tc.saving
                 : mode === "create"
-                  ? "Create Customer"
-                  : "Update Customer"}
+                  ? t.createCustomer
+                  : t.updateCustomer}
             </Button>
             <Button
               type="button"
               variant="outline"
               onClick={() => router.push("/customers")}
             >
-              Cancel
+              {tc.cancel}
             </Button>
           </div>
         </form>

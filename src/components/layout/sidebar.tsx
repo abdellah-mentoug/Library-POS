@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { UserRole } from "@/lib/auth";
+import { useTranslations } from "@/lib/i18n/use-translations";
 import { cn } from "@/lib/utils";
 import { STORE_CONFIG } from "@/lib/utils/constants";
 import {
@@ -19,57 +20,60 @@ import {
   Settings,
   BookOpen,
 } from "lucide-react";
+import type { Messages } from "@/lib/i18n/translations/en";
+
+type NavKey = keyof Messages["nav"];
 
 interface SidebarProps {
   role: UserRole;
 }
 
 interface NavItem {
-  label: string;
+  labelKey: NavKey;
   href: string;
   icon: React.ElementType;
   adminOnly?: boolean;
 }
 
 interface NavSection {
-  title: string;
+  titleKey: NavKey;
   items: NavItem[];
 }
 
 const navSections: NavSection[] = [
   {
-    title: "Main",
+    titleKey: "main",
     items: [
-      { label: "Dashboard", href: "/", icon: LayoutDashboard },
-      { label: "POS", href: "/pos", icon: ShoppingCart },
-      { label: "Sales", href: "/sales", icon: Receipt },
+      { labelKey: "dashboard", href: "/", icon: LayoutDashboard },
+      { labelKey: "pos", href: "/pos", icon: ShoppingCart },
+      { labelKey: "sales", href: "/sales", icon: Receipt },
     ],
   },
   {
-    title: "Inventory",
+    titleKey: "inventory",
     items: [
-      { label: "Products", href: "/products", icon: Package },
-      { label: "Categories", href: "/categories", icon: FolderTree },
+      { labelKey: "products", href: "/products", icon: Package },
+      { labelKey: "categories", href: "/categories", icon: FolderTree },
     ],
   },
   {
-    title: "Services",
+    titleKey: "services",
     items: [
-      { label: "Print Orders", href: "/print-orders", icon: Printer },
+      { labelKey: "printOrders", href: "/print-orders", icon: Printer },
     ],
   },
   {
-    title: "People",
+    titleKey: "people",
     items: [
-      { label: "Customers", href: "/customers", icon: Users },
-      { label: "Suppliers", href: "/suppliers", icon: Truck, adminOnly: true },
+      { labelKey: "customers", href: "/customers", icon: Users },
+      { labelKey: "suppliers", href: "/suppliers", icon: Truck, adminOnly: true },
     ],
   },
   {
-    title: "Purchasing",
+    titleKey: "purchasing",
     items: [
       {
-        label: "Purchases",
+        labelKey: "purchases",
         href: "/purchases",
         icon: ClipboardList,
         adminOnly: true,
@@ -77,19 +81,20 @@ const navSections: NavSection[] = [
     ],
   },
   {
-    title: "Analytics",
-    items: [{ label: "Reports", href: "/reports", icon: BarChart3 }],
+    titleKey: "analytics",
+    items: [{ labelKey: "reports", href: "/reports", icon: BarChart3 }],
   },
   {
-    title: "System",
+    titleKey: "system",
     items: [
-      { label: "Settings", href: "/settings", icon: Settings, adminOnly: true },
+      { labelKey: "settings", href: "/settings", icon: Settings, adminOnly: true },
     ],
   },
 ];
 
 export function Sidebar({ role }: SidebarProps) {
   const pathname = usePathname();
+  const t = useTranslations("nav");
 
   function isActive(href: string) {
     if (href === "/") return pathname === "/";
@@ -111,9 +116,9 @@ export function Sidebar({ role }: SidebarProps) {
           if (visibleItems.length === 0) return null;
 
           return (
-            <div key={section.title} className="mb-6">
+            <div key={section.titleKey} className="mb-6">
               <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {section.title}
+                {t[section.titleKey]}
               </p>
               {visibleItems.map((item) => {
                 const Icon = item.icon;
@@ -130,7 +135,7 @@ export function Sidebar({ role }: SidebarProps) {
                     )}
                   >
                     <Icon className="h-4 w-4" />
-                    {item.label}
+                    {t[item.labelKey]}
                   </Link>
                 );
               })}

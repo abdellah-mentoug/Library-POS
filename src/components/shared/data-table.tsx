@@ -29,6 +29,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTranslations } from "@/lib/i18n/use-translations";
+import { interpolate } from "@/lib/i18n/locales";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -42,6 +44,7 @@ export function DataTable<TData, TValue>({
   data,
   pageSize = 20,
 }: DataTableProps<TData, TValue>) {
+  const t = useTranslations("common");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -106,7 +109,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {t.noResults}
                 </TableCell>
               </TableRow>
             )}
@@ -116,11 +119,11 @@ export function DataTable<TData, TValue>({
 
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          {table.getFilteredRowModel().rows.length} row(s) total
+          {interpolate(t.rowsTotal, { count: table.getFilteredRowModel().rows.length })}
         </p>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Rows per page</span>
+            <span className="text-sm text-muted-foreground">{t.rowsPerPage}</span>
             <Select
               value={String(table.getState().pagination.pageSize)}
               onValueChange={(value) => table.setPageSize(Number(value))}
@@ -138,8 +141,7 @@ export function DataTable<TData, TValue>({
             </Select>
           </div>
           <span className="text-sm text-muted-foreground">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
+            {interpolate(t.pageOf, { current: table.getState().pagination.pageIndex + 1, total: table.getPageCount() })}
           </span>
           <div className="flex gap-2">
             <Button
@@ -148,7 +150,7 @@ export function DataTable<TData, TValue>({
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
             >
-              Previous
+              {t.previous}
             </Button>
             <Button
               variant="outline"
@@ -156,7 +158,7 @@ export function DataTable<TData, TValue>({
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
             >
-              Next
+              {t.next}
             </Button>
           </div>
         </div>

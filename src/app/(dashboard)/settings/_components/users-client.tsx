@@ -5,6 +5,7 @@ import { UserTable } from "./user-table";
 import { UserForm } from "./user-form";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 interface User {
   id: string;
@@ -23,6 +24,7 @@ interface UsersClientProps {
 export function UsersClient({ users, currentUserId }: UsersClientProps) {
   const [formOpen, setFormOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const t = useTranslations("settings");
 
   function handleAdd() {
     setEditingUser(null);
@@ -42,10 +44,10 @@ export function UsersClient({ users, currentUserId }: UsersClientProps) {
   return (
     <>
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">User Management</h1>
+        <h1 className="text-3xl font-bold">{t.userManagement}</h1>
         <Button onClick={handleAdd}>
           <Plus className="mr-2 h-4 w-4" />
-          Add User
+          {t.addUser}
         </Button>
       </div>
       <UserTable

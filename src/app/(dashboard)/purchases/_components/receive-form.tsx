@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
+import { useTranslations } from "@/lib/i18n/use-translations";
+import { interpolate } from "@/lib/i18n/locales";
 
 interface PurchaseItem {
   id: string;
@@ -33,6 +35,8 @@ interface ReceiveFormProps {
 
 export function ReceiveForm({ poId, items }: ReceiveFormProps) {
   const router = useRouter();
+  const t = useTranslations("purchases");
+  const tc = useTranslations("common");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [quantities, setQuantities] = useState<Record<string, number>>(() => {
@@ -75,7 +79,7 @@ export function ReceiveForm({ poId, items }: ReceiveFormProps) {
       }));
 
     if (receivedItems.length === 0) {
-      setError("Enter quantity for at least one item");
+      setError(t.enterQuantity);
       return;
     }
 
@@ -85,7 +89,7 @@ export function ReceiveForm({ poId, items }: ReceiveFormProps) {
       if (result && "error" in result && result.error) {
         setError(result.error as string);
       } else if (result && "itemsReceived" in result) {
-        toast.success(`Stock received for ${result.itemsReceived} item(s)`);
+        toast.success(interpolate(t.stockReceived, { count: result.itemsReceived }));
         router.push(`/purchases/${poId}`);
       }
     });
@@ -95,10 +99,10 @@ export function ReceiveForm({ poId, items }: ReceiveFormProps) {
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>Items to Receive</CardTitle>
+          <CardTitle>{t.itemsToReceive}</CardTitle>
           <div className="flex gap-2">
             <Button type="button" variant="outline" size="sm" onClick={fillAll}>
-              Fill All
+              {t.fillAll}
             </Button>
             <Button
               type="button"
@@ -106,7 +110,7 @@ export function ReceiveForm({ poId, items }: ReceiveFormProps) {
               size="sm"
               onClick={clearAll}
             >
-              Clear All
+              {t.clearAll}
             </Button>
           </div>
         </div>
@@ -116,12 +120,12 @@ export function ReceiveForm({ poId, items }: ReceiveFormProps) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead className="text-center">Ordered</TableHead>
-                <TableHead className="text-center">Received</TableHead>
-                <TableHead className="text-center">Remaining</TableHead>
-                <TableHead className="text-center">Receive Now</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>{t.product}</TableHead>
+                <TableHead className="text-center">{t.orderedCol}</TableHead>
+                <TableHead className="text-center">{t.receivedCol}</TableHead>
+                <TableHead className="text-center">{t.remaining}</TableHead>
+                <TableHead className="text-center">{t.receiveNow}</TableHead>
+                <TableHead>{tc.status}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -134,7 +138,7 @@ export function ReceiveForm({ poId, items }: ReceiveFormProps) {
                     className={fullyReceived ? "opacity-50" : ""}
                   >
                     <TableCell className="font-medium">
-                      {item.products?.name || "Unknown Product"}
+                      {item.products?.name || t.unknownProduct}
                     </TableCell>
                     <TableCell className="text-center">
                       {item.quantity_ordered}
@@ -169,14 +173,14 @@ export function ReceiveForm({ poId, items }: ReceiveFormProps) {
                     <TableCell>
                       {fullyReceived ? (
                         <Badge className="bg-green-100 text-green-800">
-                          Complete
+                          {t.complete}
                         </Badge>
                       ) : item.quantity_received > 0 ? (
                         <Badge className="bg-orange-100 text-orange-800">
-                          Partial
+                          {t.partial}
                         </Badge>
                       ) : (
-                        <Badge variant="secondary">Pending</Badge>
+                        <Badge variant="secondary">{t.pending}</Badge>
                       )}
                     </TableCell>
                   </TableRow>
@@ -193,14 +197,14 @@ export function ReceiveForm({ poId, items }: ReceiveFormProps) {
 
           <div className="mt-6 flex gap-3">
             <Button type="submit" disabled={isPending}>
-              {isPending ? "Receiving..." : "Receive Stock"}
+              {isPending ? t.receiving : t.receiveStock}
             </Button>
             <Button
               type="button"
               variant="outline"
               onClick={() => router.push(`/purchases/${poId}`)}
             >
-              Cancel
+              {tc.cancel}
             </Button>
           </div>
         </form>

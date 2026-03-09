@@ -1,6 +1,7 @@
 import { getAuthUser } from "@/lib/auth";
 import { getProduct } from "@/lib/actions/products";
 import { getStockMovements } from "@/lib/actions/stock";
+import { getTranslations } from "@/lib/i18n/t-server";
 import { formatCurrency, formatDateTime } from "@/lib/utils/format";
 import { BarcodeLabel } from "../_components/barcode-label";
 import { StockAdjustmentDialog } from "../_components/stock-adjustment-dialog";
@@ -26,6 +27,10 @@ export default async function ProductDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const [t, tc] = await Promise.all([
+    getTranslations("products"),
+    getTranslations("common"),
+  ]);
   const user = await getAuthUser();
   const { id } = await params;
 
@@ -58,20 +63,20 @@ export default async function ProductDetailPage({
               trigger={
                 <Button variant="outline">
                   <PackagePlus className="mr-2 h-4 w-4" />
-                  Adjust Stock
+                  {t.adjustStock}
                 </Button>
               }
             />
             <Button variant="outline" asChild>
               <Link href={`/products/${product.id}/edit`}>
                 <Pencil className="mr-2 h-4 w-4" />
-                Edit
+                {tc.edit}
               </Link>
             </Button>
             <form action={handleDelete}>
               <Button variant="destructive" type="submit">
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete
+                {tc.delete}
               </Button>
             </form>
           </div>
@@ -86,24 +91,24 @@ export default async function ProductDetailPage({
           <CardContent className="space-y-3">
             {product.description && (
               <div>
-                <p className="text-sm text-muted-foreground">Description</p>
+                <p className="text-sm text-muted-foreground">{t.description}</p>
                 <p>{product.description}</p>
               </div>
             )}
             <div>
-              <p className="text-sm text-muted-foreground">Category</p>
+              <p className="text-sm text-muted-foreground">{t.category}</p>
               <p>
                 {product.categories?.name || (
-                  <span className="text-muted-foreground">Uncategorized</span>
+                  <span className="text-muted-foreground">{t.uncategorized}</span>
                 )}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">SKU</p>
-              <p>{product.sku || <span className="text-muted-foreground">Not set</span>}</p>
+              <p className="text-sm text-muted-foreground">{t.sku}</p>
+              <p>{product.sku || <span className="text-muted-foreground">{tc.notSet}</span>}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Unit</p>
+              <p className="text-sm text-muted-foreground">{t.unit}</p>
               <p className="capitalize">{product.unit}</p>
             </div>
           </CardContent>
@@ -116,32 +121,32 @@ export default async function ProductDetailPage({
           <CardContent className="space-y-3">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-muted-foreground">Price</p>
+                <p className="text-sm text-muted-foreground">{t.purchasePrice}</p>
                 <p className="text-lg font-semibold">
                   {formatCurrency(product.purchase_price)}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Tax Rate</p>
+                <p className="text-sm text-muted-foreground">{t.taxRate}</p>
                 <p className="text-lg font-semibold">{product.tax_rate}%</p>
               </div>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Stock</p>
+              <p className="text-sm text-muted-foreground">{t.stock}</p>
               <div className="flex items-center gap-2">
                 <span className="text-2xl font-bold">
                   {product.stock_quantity}
                 </span>
                 {product.stock_quantity === 0 ? (
-                  <Badge variant="destructive">Out of Stock</Badge>
+                  <Badge variant="destructive">{t.outOfStock}</Badge>
                 ) : product.stock_quantity <= product.low_stock_threshold ? (
-                  <Badge variant="secondary">Low Stock</Badge>
+                  <Badge variant="secondary">{t.lowStock}</Badge>
                 ) : (
-                  <Badge className="bg-green-100 text-green-800">In Stock</Badge>
+                  <Badge className="bg-green-100 text-green-800">{t.inStock}</Badge>
                 )}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                Threshold: {product.low_stock_threshold}
+                {t.lowStockThreshold}: {product.low_stock_threshold}
               </p>
             </div>
           </CardContent>
@@ -151,7 +156,7 @@ export default async function ProductDetailPage({
       {product.barcode && (
         <Card>
           <CardHeader>
-            <CardTitle>Barcode</CardTitle>
+            <CardTitle>{t.barcode}</CardTitle>
           </CardHeader>
           <CardContent>
             <BarcodeLabel
@@ -165,20 +170,20 @@ export default async function ProductDetailPage({
 
       <Card>
         <CardHeader>
-          <CardTitle>Stock Movement History</CardTitle>
+          <CardTitle>{t.stockMovements}</CardTitle>
         </CardHeader>
         <CardContent>
           {stockMovements.length === 0 ? (
-            <p className="text-muted-foreground">No stock movements yet.</p>
+            <p className="text-muted-foreground">{tc.noResults}</p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Change</TableHead>
-                  <TableHead>Reason</TableHead>
-                  <TableHead>By</TableHead>
-                  <TableHead>Notes</TableHead>
+                  <TableHead>{tc.date}</TableHead>
+                  <TableHead>{t.change}</TableHead>
+                  <TableHead>{t.reason}</TableHead>
+                  <TableHead>{t.by}</TableHead>
+                  <TableHead>{tc.notes}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

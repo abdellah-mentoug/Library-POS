@@ -7,12 +7,15 @@ import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, Mail, Phone, MapPin } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { getTranslations } from "@/lib/i18n/t-server";
 
 export default async function CustomerDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const t = await getTranslations("customers");
+  const tc = await getTranslations("common");
   const user = await getAuthUser();
   const { id } = await params;
 
@@ -40,14 +43,14 @@ export default async function CustomerDetailPage({
           <Button variant="outline" asChild>
             <Link href={`/customers/${customer.id}/edit`}>
               <Pencil className="mr-2 h-4 w-4" />
-              Edit
+              {tc.edit}
             </Link>
           </Button>
           {isAdmin && (
             <form action={handleDelete}>
               <Button variant="destructive" type="submit">
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete
+                {tc.delete}
               </Button>
             </form>
           )}
@@ -57,7 +60,7 @@ export default async function CustomerDetailPage({
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Contact Information</CardTitle>
+            <CardTitle>{t.contactInfo}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {customer.email && (
@@ -87,7 +90,7 @@ export default async function CustomerDetailPage({
             )}
             {!customer.email && !customer.phone && !customer.address && (
               <p className="text-muted-foreground">
-                No contact information provided.
+                {t.noContactInfo}
               </p>
             )}
           </CardContent>
@@ -95,13 +98,13 @@ export default async function CustomerDetailPage({
 
         <Card>
           <CardHeader>
-            <CardTitle>Notes</CardTitle>
+            <CardTitle>{tc.notes}</CardTitle>
           </CardHeader>
           <CardContent>
             {customer.notes ? (
               <p className="whitespace-pre-wrap">{customer.notes}</p>
             ) : (
-              <p className="text-muted-foreground">No notes.</p>
+              <p className="text-muted-foreground">{t.noNotes}</p>
             )}
           </CardContent>
         </Card>
@@ -109,7 +112,7 @@ export default async function CustomerDetailPage({
 
       <Card>
         <CardHeader>
-          <CardTitle>Purchase History</CardTitle>
+          <CardTitle>{t.purchaseHistory}</CardTitle>
         </CardHeader>
         <CardContent>
           <PurchaseHistory sales={sales} printOrders={printOrders} />

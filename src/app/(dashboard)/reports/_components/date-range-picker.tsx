@@ -4,13 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
-const presets = [
-  { label: "Today", days: 0 },
-  { label: "7 Days", days: 7 },
-  { label: "30 Days", days: 30 },
-  { label: "90 Days", days: 90 },
-];
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 function getDateStr(daysAgo: number) {
   const d = new Date();
@@ -19,6 +13,7 @@ function getDateStr(daysAgo: number) {
 }
 
 export function DateRangePicker() {
+  const t = useTranslations("reports");
   const router = useRouter();
   const searchParams = useSearchParams();
   const start = searchParams.get("start") || getDateStr(30);
@@ -34,7 +29,7 @@ export function DateRangePicker() {
   return (
     <div className="flex flex-wrap items-end gap-3">
       <div className="space-y-1">
-        <Label className="text-xs">Start</Label>
+        <Label className="text-xs">{t.start}</Label>
         <Input
           type="date"
           value={start}
@@ -43,7 +38,7 @@ export function DateRangePicker() {
         />
       </div>
       <div className="space-y-1">
-        <Label className="text-xs">End</Label>
+        <Label className="text-xs">{t.end}</Label>
         <Input
           type="date"
           value={end}
@@ -52,9 +47,14 @@ export function DateRangePicker() {
         />
       </div>
       <div className="flex gap-1">
-        {presets.map((preset) => (
+        {[
+          { label: t.today, days: 0 },
+          { label: t.days7, days: 7 },
+          { label: t.days30, days: 30 },
+          { label: t.days90, days: 90 },
+        ].map((preset) => (
           <Button
-            key={preset.label}
+            key={preset.days}
             variant="outline"
             size="sm"
             onClick={() =>

@@ -5,6 +5,7 @@ import { SupplierTable } from "./supplier-table";
 import { SupplierForm } from "./supplier-form";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 interface Supplier {
   id: string;
@@ -21,6 +22,7 @@ interface SuppliersClientProps {
 }
 
 export function SuppliersClient({ suppliers }: SuppliersClientProps) {
+  const t = useTranslations("suppliers");
   const [formOpen, setFormOpen] = useState(false);
   const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
 
@@ -42,10 +44,10 @@ export function SuppliersClient({ suppliers }: SuppliersClientProps) {
   return (
     <>
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Suppliers</h1>
+        <h1 className="text-3xl font-bold">{t.title}</h1>
         <Button onClick={handleAdd}>
           <Plus className="mr-2 h-4 w-4" />
-          Add Supplier
+          {t.addSupplier}
         </Button>
       </div>
       <SupplierTable suppliers={suppliers} onEdit={handleEdit} />

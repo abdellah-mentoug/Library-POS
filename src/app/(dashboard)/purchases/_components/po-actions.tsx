@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Package, XCircle, Truck } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 interface POActionsProps {
   poId: string;
@@ -15,6 +16,8 @@ interface POActionsProps {
 
 export function POActions({ poId, status }: POActionsProps) {
   const router = useRouter();
+  const t = useTranslations("purchases");
+  const tc = useTranslations("common");
   const [isPending, startTransition] = useTransition();
 
   function handleStatusUpdate(newStatus: "ordered" | "cancelled") {
@@ -25,8 +28,8 @@ export function POActions({ poId, status }: POActionsProps) {
       } else {
         toast.success(
           newStatus === "ordered"
-            ? "Order marked as ordered"
-            : "Order cancelled"
+            ? t.orderMarkedOrdered
+            : t.orderCancelled
         );
         router.refresh();
       }
@@ -45,7 +48,7 @@ export function POActions({ poId, status }: POActionsProps) {
           disabled={isPending}
         >
           <Truck className="mr-2 h-4 w-4" />
-          {isPending ? "Updating..." : "Mark as Ordered"}
+          {isPending ? tc.updating : t.markOrdered}
         </Button>
       )}
 
@@ -53,7 +56,7 @@ export function POActions({ poId, status }: POActionsProps) {
         <Button asChild>
           <Link href={`/purchases/${poId}/receive`}>
             <Package className="mr-2 h-4 w-4" />
-            Receive Stock
+            {t.receiveStock}
           </Link>
         </Button>
       )}
@@ -65,7 +68,7 @@ export function POActions({ poId, status }: POActionsProps) {
           disabled={isPending}
         >
           <XCircle className="mr-2 h-4 w-4" />
-          Cancel Order
+          {t.cancelOrder}
         </Button>
       )}
     </div>
