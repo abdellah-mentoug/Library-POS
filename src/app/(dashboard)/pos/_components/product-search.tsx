@@ -9,6 +9,7 @@ import { useTranslations } from "@/lib/i18n/use-translations";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
+import Image from "next/image";
 
 
 interface Product {
@@ -18,6 +19,7 @@ interface Product {
   purchase_price: number;
   tax_rate: number;
   stock_quantity: number;
+  image_url: string | null;
   categories: { name: string }[] | { name: string } | null;
 }
 
@@ -36,7 +38,7 @@ export function ProductSearch() {
       const supabase = createClient();
       const { data } = await supabase
         .from("products")
-        .select("id, name, barcode, purchase_price, tax_rate, stock_quantity, categories(name)")
+        .select("id, name, barcode, purchase_price, tax_rate, stock_quantity, image_url, categories(name)")
         .eq("is_active", true)
         .order("name");
 
@@ -105,6 +107,23 @@ export function ProductSearch() {
                 onClick={() => handleAddToCart(product)}
                 className="rounded-lg border p-3 text-left transition-colors hover:bg-accent"
               >
+                {product.image_url ? (
+                  <div className="relative mb-2 h-20 w-full overflow-hidden rounded-md bg-muted">
+                    <Image
+                      src={product.image_url}
+                      alt={product.name}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 50vw, 33vw"
+                    />
+                  </div>
+                ) : (
+                  <div className="mb-2 flex h-20 w-full items-center justify-center rounded-md bg-muted">
+                    <span className="text-2xl text-muted-foreground/40">
+                      {product.name.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                )}
                 <p className="text-sm font-medium line-clamp-2">
                   {product.name}
                 </p>

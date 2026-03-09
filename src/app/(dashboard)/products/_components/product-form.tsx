@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { createProduct, updateProduct } from "@/lib/actions/products";
+import { createProduct, updateProduct, uploadProductImage, deleteProductImage } from "@/lib/actions/products";
 import { ProductSchema } from "@/lib/utils/validation";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,6 +38,7 @@ interface Product {
   stock_quantity: number;
   low_stock_threshold: number;
   unit: string;
+  image_url: string | null;
 }
 
 interface ProductFormProps {
@@ -51,6 +53,9 @@ export function ProductForm({ mode, product, categories }: ProductFormProps) {
   const tc = useTranslations("common");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [imageUrl, setImageUrl] = useState<string | null>(product?.image_url ?? null);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const parents = categories.filter((c) => !c.parent_id);
   const childrenMap = new Map<string, Category[]>();
   categories.forEach((c) => {
@@ -102,6 +107,34 @@ export function ProductForm({ mode, product, categories }: ProductFormProps) {
         router.push("/products");
       }
     });
+  }
+
+  async function handleImageUpload(file: File) {
+    if (!product?.id) return;
+    setIsUploading(true);
+    const fd = new FormData();
+    fd.append("image", file);
+    const result = await uploadProductImage(product.id, fd);
+    setIsUploading(false);
+    if (result && "error" in result && result.error) {
+      toast.error(result.error as string);
+    } else if (result && "imageUrl" in result) {
+      setImageUrl(result.imageUrl as string);
+      toast.success(t.imageUploaded);
+    }
+  }
+
+  async function handleImageRemove() {
+    if (!product?.id) return;
+    setIsUploading(true);
+    const result = await deleteProductImage(product.id);
+    setIsUploading(false);
+    if (result && "error" in result && result.error) {
+      toast.error(result.error as string);
+    } else {
+      setImageUrl(null);
+      toast.success(t.imageRemoved);
+    }
   }
 
   return (
@@ -243,6 +276,78 @@ export function ProductForm({ mode, product, categories }: ProductFormProps) {
               </Select>
             </div>
           </div>
+
+          {mode === "edit" && product && (
+            <div className="space-y-2">
+              <Label>{t.image}</Label>
+              <div className="flex items-start gap-4">
+                {imageUrl ? (
+                  <div className="relative h-32 w-32 overflow-hidden rounded-lg border">
+                    <Image
+                      src={imageUrl}
+                      alt={product.name}
+                      fill
+                      className="object-cover"
+                      sizes="128px"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      const file = e.dataTransfer.files[0];
+                      if (file) handleImageUpload(file);
+                    }}
+                    className="flex h-32 w-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 hover:border-muted-foreground/50 transition-colors"
+                  >
+                    <p className="text-xs text-center text-muted-foreground px-2">
+                      {t.dragOrClick}
+                    </p>
+                    <p className="text-[10px] text-center text-muted-foreground/60 mt-1 px-2">
+                      {t.imageFormats}
+                    </p>
+                  </div>
+                )}
+                <div className="flex flex-col gap-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleImageUpload(file);
+                      e.target.value = "";
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={isUploading}
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    {isUploading ? tc.loading : imageUrl ? t.changeImage : t.uploadImage}
+                  </Button>
+                  {imageUrl && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      disabled={isUploading}
+                      onClick={handleImageRemove}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      {t.removeImage}
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="description">{t.description}</Label>

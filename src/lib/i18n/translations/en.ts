@@ -193,6 +193,15 @@ export const en = {
     quantity: "Quantity",
     change: "Change",
     by: "By",
+    image: "Product Image",
+    uploadImage: "Upload Image",
+    removeImage: "Remove Image",
+    changeImage: "Change Image",
+    dragOrClick: "Drag & drop or click to upload",
+    imageFormats: "JPEG, PNG, or WebP (max 5MB)",
+    imageUploaded: "Image uploaded",
+    imageRemoved: "Image removed",
+    uploadFailed: "Upload failed",
   },
 
   categories: {

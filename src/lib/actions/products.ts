@@ -138,6 +138,98 @@ export async function updateProduct(id: string, formData: FormData) {
   });
 }
 
+export async function uploadProductImage(productId: string, formData: FormData) {
+  if (!isValidUuid(productId)) return { error: "Invalid product ID" };
+  return adminAction(async () => {
+    const file = formData.get("image") as File;
+    if (!file || file.size === 0) return { error: "No file provided" };
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    if (!allowedTypes.includes(file.type)) {
+      return { error: "Only JPEG, PNG, and WebP images are allowed" };
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      return { error: "Image must be under 5MB" };
+    }
+
+    const ext = file.name.split(".").pop() || "jpg";
+    const filePath = `${productId}.${ext}`;
+
+    const supabase = createAdminClient();
+
+    // Delete old image if it exists
+    const { data: product } = await supabase
+      .from("products")
+      .select("image_url")
+      .eq("id", productId)
+      .single();
+
+    if (product?.image_url) {
+      const oldPath = product.image_url.split("/product-images/")[1];
+      if (oldPath) {
+        await supabase.storage.from("product-images").remove([oldPath]);
+      }
+    }
+
+    // Upload new image
+    const { error: uploadError } = await supabase.storage
+      .from("product-images")
+      .upload(filePath, file, { upsert: true });
+
+    if (uploadError) return { error: uploadError.message };
+
+    // Get public URL
+    const { data: urlData } = supabase.storage
+      .from("product-images")
+      .getPublicUrl(filePath);
+
+    // Update product record
+    const { error: updateError } = await supabase
+      .from("products")
+      .update({ image_url: urlData.publicUrl })
+      .eq("id", productId);
+
+    if (updateError) return { error: updateError.message };
+
+    revalidatePath("/products");
+    revalidatePath(`/products/${productId}`);
+    revalidatePath("/pos");
+    return { success: true, imageUrl: urlData.publicUrl };
+  });
+}
+
+export async function deleteProductImage(productId: string) {
+  if (!isValidUuid(productId)) return { error: "Invalid product ID" };
+  return adminAction(async () => {
+    const supabase = createAdminClient();
+
+    const { data: product } = await supabase
+      .from("products")
+      .select("image_url")
+      .eq("id", productId)
+      .single();
+
+    if (product?.image_url) {
+      const filePath = product.image_url.split("/product-images/")[1];
+      if (filePath) {
+        await supabase.storage.from("product-images").remove([filePath]);
+      }
+    }
+
+    const { error } = await supabase
+      .from("products")
+      .update({ image_url: null })
+      .eq("id", productId);
+
+    if (error) return { error: error.message };
+
+    revalidatePath("/products");
+    revalidatePath(`/products/${productId}`);
+    revalidatePath("/pos");
+    return { success: true };
+  });
+}
+
 export async function deleteProduct(id: string) {
   if (!isValidUuid(id)) return { error: "Invalid product ID" };
   return adminAction(async () => {

@@ -195,6 +195,15 @@ export const fr: Messages = {
     quantity: "Quantité",
     change: "Variation",
     by: "Par",
+    image: "Image du produit",
+    uploadImage: "Ajouter une image",
+    removeImage: "Supprimer l'image",
+    changeImage: "Changer l'image",
+    dragOrClick: "Glissez-déposez ou cliquez pour télécharger",
+    imageFormats: "JPEG, PNG ou WebP (max 5 Mo)",
+    imageUploaded: "Image ajoutée",
+    imageRemoved: "Image supprimée",
+    uploadFailed: "Échec du téléchargement",
   },
 
   categories: {
