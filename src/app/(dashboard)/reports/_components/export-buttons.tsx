@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { generateCSV, downloadCSV } from "@/lib/utils/csv-export";
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 interface ExportButtonsProps {
   headers: string[];
@@ -11,6 +12,8 @@ interface ExportButtonsProps {
 }
 
 export function ExportButtons({ headers, rows, filename }: ExportButtonsProps) {
+  const t = useTranslations("reports");
+
   function handleCSV() {
     const csv = generateCSV(headers, rows);
     downloadCSV(csv, `${filename}.csv`);
@@ -19,7 +22,7 @@ export function ExportButtons({ headers, rows, filename }: ExportButtonsProps) {
   return (
     <Button variant="outline" size="sm" onClick={handleCSV}>
       <Download className="mr-2 h-4 w-4" />
-      Export CSV
+      {t.exportCSV}
     </Button>
   );
 }

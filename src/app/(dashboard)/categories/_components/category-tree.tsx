@@ -15,6 +15,8 @@ import {
   Folder,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "@/lib/i18n/use-translations";
+import { interpolate } from "@/lib/i18n/locales";
 
 interface Category {
   id: string;
@@ -137,6 +139,7 @@ function CategoryActions({
   category: Category;
   parentCategories: Category[];
 }) {
+  const t = useTranslations("categories");
   const [isPending, startTransition] = useTransition();
 
   function handleDelete() {
@@ -145,7 +148,7 @@ function CategoryActions({
       if (result && "error" in result && result.error) {
         toast.error(result.error as string);
       } else {
-        toast.success("Category deleted");
+        toast.success(t.categoryDeleted);
       }
     });
   }
@@ -162,8 +165,8 @@ function CategoryActions({
         }
       />
       <ConfirmDialog
-        title="Delete Category"
-        description={`Are you sure you want to delete "${category.name}"? Products in this category will become uncategorized.`}
+        title={t.deleteTitle}
+        description={interpolate(t.deleteConfirm, { name: category.name })}
         onConfirm={handleDelete}
         destructive
         trigger={

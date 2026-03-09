@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 interface ConfirmDialogProps {
   title: string;
@@ -26,11 +27,13 @@ export function ConfirmDialog({
   title,
   description,
   onConfirm,
-  confirmLabel = "Confirm",
+  confirmLabel,
   destructive = false,
   loading = false,
   trigger,
 }: ConfirmDialogProps) {
+  const tc = useTranslations("common");
+  const resolvedConfirmLabel = confirmLabel ?? tc.confirm;
   const [open, setOpen] = useState(false);
 
   function handleConfirm() {
@@ -52,14 +55,14 @@ export function ConfirmDialog({
             onClick={() => setOpen(false)}
             disabled={loading}
           >
-            Cancel
+            {tc.cancel}
           </Button>
           <Button
             variant={destructive ? "destructive" : "default"}
             onClick={handleConfirm}
             disabled={loading}
           >
-            {loading ? "Processing..." : confirmLabel}
+            {loading ? tc.processing : resolvedConfirmLabel}
           </Button>
         </DialogFooter>
       </DialogContent>

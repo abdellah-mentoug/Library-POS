@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { LocaleProvider } from "@/lib/i18n/locale-context";
+import { getLocale } from "@/lib/i18n/get-locale";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -18,17 +20,21 @@ export const metadata: Metadata = {
   description: "Point of Sale system for Library Bookshop & Print, Settat",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+
   return (
-    <html lang="en">
+    <html lang={locale}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <TooltipProvider>{children}</TooltipProvider>
+        <LocaleProvider initialLocale={locale}>
+          <TooltipProvider>{children}</TooltipProvider>
+        </LocaleProvider>
       </body>
     </html>
   );

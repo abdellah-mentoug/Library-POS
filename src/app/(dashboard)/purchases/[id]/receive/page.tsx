@@ -4,12 +4,15 @@ import { ReceiveForm } from "../../_components/receive-form";
 import { POStatusBadge } from "../../_components/po-status-badge";
 import { formatOrderNumber } from "@/lib/utils/format";
 import { notFound, redirect } from "next/navigation";
+import { getTranslations } from "@/lib/i18n/t-server";
+import { interpolate } from "@/lib/i18n/locales";
 
 export default async function ReceiveStockPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const t = await getTranslations("purchases");
   await requireAdmin();
   const { id } = await params;
 
@@ -29,12 +32,12 @@ export default async function ReceiveStockPage({
     <div className="space-y-4">
       <div className="flex items-center gap-3">
         <h1 className="text-3xl font-bold">
-          Receive Stock — {formatOrderNumber(po.po_number)}
+          {interpolate(t.receiveStockHeading, { poNumber: formatOrderNumber(po.po_number) })}
         </h1>
         <POStatusBadge status={po.status} />
       </div>
       <p className="text-muted-foreground">
-        Supplier: {po.suppliers?.name || "Unknown"}
+        {t.supplier}: {po.suppliers?.name || t.unknown}
       </p>
       <ReceiveForm
         poId={po.id}

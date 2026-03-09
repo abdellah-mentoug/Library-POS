@@ -222,7 +222,39 @@
   - Zero "Coming soon" placeholders remain
   - All pages fully implemented
 
-## Current State — MVP COMPLETE
+### Phase 12: Multi-Language (EN/FR)
+
+- **i18n Infrastructure** (`src/lib/i18n/`):
+  - `locales.ts` — `Locale` type (`en` | `fr`), `DEFAULT_LOCALE`, `LOCALES` array, `interpolate()` helper for dynamic strings
+  - `translations/en.ts` — All English strings (~400+), organized by 16 namespaces
+  - `translations/fr.ts` — Full French translations (matching keys)
+  - `translations/index.ts` — Re-export, `messages` record, `TranslationKeys` type
+  - `get-locale.ts` — Server-side: reads `locale` cookie via `cookies()`
+  - `locale-context.tsx` — Client-side: `LocaleProvider` + `useLocale()` hook
+  - `use-translations.ts` — Client-side: `useTranslations(namespace)` hook
+  - `t-server.ts` — Server-side: `getTranslations(namespace)` helper
+- **Language Switcher:** `src/components/layout/language-switcher.tsx` — Toggle button in topbar, sets cookie + reloads page
+- **Approach:** Cookie-based React Context (no URL routing changes, no new npm dependencies, no middleware changes)
+- **Translation Namespaces:** `common`, `auth`, `nav`, `dashboard`, `pos`, `payment`, `products`, `categories`, `sales`, `customers`, `suppliers`, `purchases`, `printOrders`, `reports`, `settings`, `errors`
+- **Files Translated:** ~65 files across all modules (pages, components, layout, shared)
+  - Layout: `layout.tsx`, `sidebar.tsx`, `topbar.tsx`
+  - Shared: `data-table.tsx`, `confirm-dialog.tsx`
+  - Auth: `login/page.tsx`
+  - Dashboard: `page.tsx` (Server Component)
+  - POS: `page.tsx`, `product-search.tsx`, `cart.tsx`, `payment-dialog.tsx`
+  - Products: all pages + `product-form.tsx`, `product-table.tsx`, `product-filters.tsx`, `stock-adjustment-dialog.tsx`
+  - Categories: `page.tsx`, `category-form.tsx`, `category-tree.tsx`
+  - Customers: all pages + `customer-form.tsx`, `customer-table.tsx`, `purchase-history.tsx`
+  - Suppliers: `suppliers-client.tsx`, `supplier-form.tsx`, `supplier-table.tsx`
+  - Purchases: all pages + `po-form.tsx`, `po-table.tsx`, `po-status-badge.tsx`, `po-actions.tsx`, `receive-form.tsx`
+  - Print Orders: all pages + all components
+  - Sales: all pages + `sales-table.tsx`, `void-sale-dialog.tsx`, `sale-detail-client.tsx`
+  - Reports: hub + 4 sub-reports + `date-range-picker.tsx`, `export-buttons.tsx`, `sales-chart.tsx`
+  - Settings: all pages + `users-client.tsx`, `user-form.tsx`, `user-table.tsx`, `store-form.tsx`
+  - Error/404: `error.tsx`, `not-found.tsx`
+- **Build:** Zero TypeScript errors, zero ESLint warnings, production build passes
+
+## Current State — MVP COMPLETE + Multi-Language
 
 - **Dev server**: Runs cleanly
 - **TypeScript**: Compiles with zero errors
@@ -239,3 +271,4 @@
 - **Settings**: User management (create/edit/deactivate), store config display
 - **All loading states**: Every route has loading.tsx
 - **Role-based UI**: Admin-only buttons/actions hidden for employees
+  /c/

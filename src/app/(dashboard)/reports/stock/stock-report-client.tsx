@@ -5,6 +5,7 @@ import { DataTable } from "@/components/shared/data-table";
 import { formatCurrency } from "@/lib/utils/format";
 import { Badge } from "@/components/ui/badge";
 import { ExportButtons } from "../_components/export-buttons";
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 interface LowStockProduct {
   id: string;
@@ -21,17 +22,19 @@ interface Props {
 }
 
 export function StockReportClient({ products }: Props) {
+  const t = useTranslations("reports");
+
   const columns: ColumnDef<LowStockProduct>[] = [
     {
       accessorKey: "name",
-      header: "Product",
+      header: t.product,
       cell: ({ row }) => (
         <span className="font-medium">{row.original.name}</span>
       ),
     },
     {
       accessorKey: "barcode",
-      header: "Barcode",
+      header: t.barcode,
       cell: ({ row }) =>
         row.original.barcode || (
           <span className="text-muted-foreground">—</span>
@@ -39,7 +42,7 @@ export function StockReportClient({ products }: Props) {
     },
     {
       accessorKey: "stock_quantity",
-      header: "Current Stock",
+      header: t.currentStock,
       cell: ({ row }) => {
         const qty = row.original.stock_quantity;
         return (
@@ -58,14 +61,14 @@ export function StockReportClient({ products }: Props) {
     },
     {
       accessorKey: "low_stock_threshold",
-      header: "Threshold",
+      header: t.threshold,
       cell: ({ row }) => (
         <div className="text-center">{row.original.low_stock_threshold}</div>
       ),
     },
     {
       id: "reorder_qty",
-      header: "Suggested Reorder",
+      header: t.suggestedReorder,
       cell: ({ row }) => {
         const needed =
           row.original.low_stock_threshold - row.original.stock_quantity;
@@ -78,7 +81,7 @@ export function StockReportClient({ products }: Props) {
     },
     {
       id: "price",
-      header: "Price",
+      header: t.price,
       cell: ({ row }) =>
         row.original.selling_price
           ? formatCurrency(row.original.selling_price)
@@ -111,7 +114,7 @@ export function StockReportClient({ products }: Props) {
       </div>
       {products.length === 0 ? (
         <p className="py-8 text-center text-muted-foreground">
-          All products are well stocked.
+          {t.allWellStocked}
         </p>
       ) : (
         <DataTable columns={columns} data={products} pageSize={50} />

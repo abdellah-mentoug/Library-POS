@@ -13,12 +13,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { notFound } from "next/navigation";
+import { getTranslations } from "@/lib/i18n/t-server";
 
 export default async function PurchaseDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const t = await getTranslations("purchases");
+  const tc = await getTranslations("common");
   await requireAdmin();
   const { id } = await params;
 
@@ -46,13 +49,13 @@ export default async function PurchaseDetailPage({
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Order Info</CardTitle>
+            <CardTitle>{t.orderInfo}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div>
-              <p className="text-sm text-muted-foreground">Supplier</p>
+              <p className="text-sm text-muted-foreground">{t.supplier}</p>
               <p className="font-medium">
-                {po.suppliers?.name || "Unknown"}
+                {po.suppliers?.name || t.unknown}
               </p>
               {po.suppliers?.contact_person && (
                 <p className="text-sm text-muted-foreground">
@@ -61,52 +64,52 @@ export default async function PurchaseDetailPage({
               )}
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Created</p>
+              <p className="text-sm text-muted-foreground">{t.created}</p>
               <p>{formatDateTime(po.created_at)}</p>
             </div>
             {po.expected_date && (
               <div>
-                <p className="text-sm text-muted-foreground">Expected Delivery</p>
+                <p className="text-sm text-muted-foreground">{t.expectedDelivery}</p>
                 <p>{formatDate(po.expected_date)}</p>
               </div>
             )}
             {po.received_date && (
               <div>
-                <p className="text-sm text-muted-foreground">Received</p>
+                <p className="text-sm text-muted-foreground">{t.receivedDate}</p>
                 <p>{formatDateTime(po.received_date)}</p>
               </div>
             )}
             <div>
-              <p className="text-sm text-muted-foreground">Created By</p>
-              <p>{profileData?.full_name || "Unknown"}</p>
+              <p className="text-sm text-muted-foreground">{t.createdBy}</p>
+              <p>{profileData?.full_name || t.unknown}</p>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Totals</CardTitle>
+            <CardTitle>{t.totals}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Subtotal</span>
+              <span className="text-muted-foreground">{t.subtotal}</span>
               <span className="font-medium">{formatCurrency(po.subtotal)}</span>
             </div>
             {po.tax_total > 0 && (
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Tax</span>
+                <span className="text-muted-foreground">{t.tax}</span>
                 <span className="font-medium">
                   {formatCurrency(po.tax_total)}
                 </span>
               </div>
             )}
             <div className="flex justify-between border-t pt-2 text-lg font-semibold">
-              <span>Total</span>
+              <span>{tc.total}</span>
               <span>{formatCurrency(po.total)}</span>
             </div>
             {po.notes && (
               <div className="mt-4 border-t pt-3">
-                <p className="text-sm text-muted-foreground">Notes</p>
+                <p className="text-sm text-muted-foreground">{tc.notes}</p>
                 <p className="mt-1 whitespace-pre-wrap text-sm">{po.notes}</p>
               </div>
             )}
@@ -116,17 +119,17 @@ export default async function PurchaseDetailPage({
 
       <Card>
         <CardHeader>
-          <CardTitle>Line Items</CardTitle>
+          <CardTitle>{t.lineItems}</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead className="text-center">Qty Ordered</TableHead>
-                <TableHead className="text-center">Qty Received</TableHead>
-                <TableHead className="text-right">Unit Cost</TableHead>
-                <TableHead className="text-right">Line Total</TableHead>
+                <TableHead>{t.product}</TableHead>
+                <TableHead className="text-center">{t.qtyOrdered}</TableHead>
+                <TableHead className="text-center">{t.qtyReceived}</TableHead>
+                <TableHead className="text-right">{t.unitCost}</TableHead>
+                <TableHead className="text-right">{t.lineTotal}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -141,7 +144,7 @@ export default async function PurchaseDetailPage({
               }>).map((item) => (
                 <TableRow key={item.id}>
                   <TableCell className="font-medium">
-                    {item.products?.name || "Unknown Product"}
+                    {item.products?.name || t.unknownProduct}
                   </TableCell>
                   <TableCell className="text-center">
                     {item.quantity_ordered}

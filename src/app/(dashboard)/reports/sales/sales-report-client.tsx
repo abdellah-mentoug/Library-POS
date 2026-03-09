@@ -14,6 +14,7 @@ import { DateRangePicker } from "../_components/date-range-picker";
 import { SalesChart } from "../_components/sales-chart";
 import { ExportButtons } from "../_components/export-buttons";
 import { formatCurrency, formatDate } from "@/lib/utils/format";
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 interface DailySale {
   sale_date: string;
@@ -29,6 +30,8 @@ interface SalesReportClientProps {
 }
 
 export function SalesReportClient({ data }: SalesReportClientProps) {
+  const t = useTranslations("reports");
+
   const exportRows = data.map((r) => ({
     sale_date: r.sale_date,
     transaction_count: r.transaction_count,
@@ -60,7 +63,7 @@ export function SalesReportClient({ data }: SalesReportClientProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Daily Revenue</CardTitle>
+          <CardTitle>{t.dailyRevenue}</CardTitle>
         </CardHeader>
         <CardContent>
           <SalesChart data={data} />
@@ -69,23 +72,23 @@ export function SalesReportClient({ data }: SalesReportClientProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Daily Breakdown</CardTitle>
+          <CardTitle>{t.dailyBreakdown}</CardTitle>
         </CardHeader>
         <CardContent>
           {data.length === 0 ? (
             <p className="py-8 text-center text-muted-foreground">
-              No sales data for this period.
+              {t.noData}
             </p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead className="text-center">Transactions</TableHead>
-                  <TableHead className="text-right">Revenue</TableHead>
-                  <TableHead className="text-right">Tax</TableHead>
-                  <TableHead className="text-right">Discounts</TableHead>
-                  <TableHead className="text-right">Avg Basket</TableHead>
+                  <TableHead>{t.date}</TableHead>
+                  <TableHead className="text-center">{t.transactions}</TableHead>
+                  <TableHead className="text-right">{t.revenue}</TableHead>
+                  <TableHead className="text-right">{t.tax}</TableHead>
+                  <TableHead className="text-right">{t.discounts}</TableHead>
+                  <TableHead className="text-right">{t.avgBasket}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

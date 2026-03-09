@@ -29,6 +29,9 @@ def parse_invoice(path, language):
         if pd.notna(cat_val) and "REMISE" in str(cat_val):
             break
 
+
+
+
         if pd.notna(cat_val) and str(cat_val).strip():
             current_category = str(cat_val).strip()
 

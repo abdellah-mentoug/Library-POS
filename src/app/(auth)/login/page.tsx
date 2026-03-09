@@ -15,8 +15,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { BookOpen } from "lucide-react";
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 export default function LoginPage() {
+  const t = useTranslations("auth");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -50,29 +52,29 @@ export default function LoginPage() {
           <BookOpen className="h-6 w-6 text-primary" />
         </div>
         <CardTitle className="text-2xl">{STORE_CONFIG.name}</CardTitle>
-        <CardDescription>Sign in to your account</CardDescription>
+        <CardDescription>{t.signInDescription}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t.email}</Label>
             <Input
               id="email"
               name="email"
               type="email"
-              placeholder="you@example.com"
+              placeholder={t.emailPlaceholder}
               required
               disabled={isPending}
               autoComplete="email"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{t.password}</Label>
             <Input
               id="password"
               name="password"
               type="password"
-              placeholder="Enter your password"
+              placeholder={t.passwordPlaceholder}
               required
               disabled={isPending}
               autoComplete="current-password"
@@ -86,7 +88,7 @@ export default function LoginPage() {
           )}
 
           <Button type="submit" className="w-full" disabled={isPending}>
-            {isPending ? "Signing in..." : "Sign in"}
+            {isPending ? t.signingIn : t.signIn}
           </Button>
         </form>
       </CardContent>

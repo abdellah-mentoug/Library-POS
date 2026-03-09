@@ -4,12 +4,15 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useCartStore } from "@/lib/store/cart-store";
 import { useBarcodeScanner } from "@/hooks/use-barcode-scanner";
+import { useTranslations } from "@/lib/i18n/use-translations";
+import { interpolate } from "@/lib/i18n/locales";
 import { ProductSearch } from "./_components/product-search";
 import { Cart } from "./_components/cart";
 import { PaymentDialog } from "./_components/payment-dialog";
 import { toast } from "sonner";
 
 export default function PosPage() {
+  const t = useTranslations("pos");
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [cashierName, setCashierName] = useState("Cashier");
   const addItem = useCartStore((s) => s.addItem);
@@ -45,7 +48,7 @@ export default function PosPage() {
         .single();
 
       if (error || !product) {
-        toast.error(`Product not found: ${barcode}`);
+        toast.error(interpolate(t.productNotFound, { barcode }));
         return;
       }
 
@@ -58,7 +61,7 @@ export default function PosPage() {
         taxRate: product.tax_rate,
       });
 
-      toast.success(`Added: ${product.name}`);
+      toast.success(interpolate(t.added, { name: product.name }));
     },
   });
 

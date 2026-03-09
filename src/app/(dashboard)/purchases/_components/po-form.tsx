@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/table";
 import { Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 interface Supplier {
   id: string;
@@ -53,6 +54,8 @@ interface POFormProps {
 
 export function POForm({ suppliers, products }: POFormProps) {
   const router = useRouter();
+  const t = useTranslations("purchases");
+  const tc = useTranslations("common");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [supplierId, setSupplierId] = useState("");
@@ -103,19 +106,19 @@ export function POForm({ suppliers, products }: POFormProps) {
     setError(null);
 
     if (!supplierId) {
-      setError("Please select a supplier");
+      setError(t.supplierRequired);
       return;
     }
 
     const validItems = items.filter((item) => item.product_id);
     if (validItems.length === 0) {
-      setError("Add at least one product");
+      setError(t.addAtLeastOne);
       return;
     }
 
     for (const item of validItems) {
       if (item.quantity_ordered <= 0) {
-        setError("All quantities must be greater than 0");
+        setError(t.quantityPositive);
         return;
       }
     }
@@ -135,7 +138,7 @@ export function POForm({ suppliers, products }: POFormProps) {
       if (result && "error" in result && result.error) {
         setError(result.error as string);
       } else if (result && "id" in result) {
-        toast.success("Purchase order created");
+        toast.success(t.orderCreated);
         router.push(`/purchases/${result.id}`);
       }
     });
@@ -145,15 +148,15 @@ export function POForm({ suppliers, products }: POFormProps) {
     <form onSubmit={handleSubmit} className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Order Details</CardTitle>
+          <CardTitle>{t.orderDetails}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label>Supplier *</Label>
+              <Label>{t.supplier}</Label>
               <Select value={supplierId} onValueChange={setSupplierId}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select supplier" />
+                  <SelectValue placeholder={t.selectSupplier} />
                 </SelectTrigger>
                 <SelectContent>
                   {suppliers.map((s) => (
@@ -166,7 +169,7 @@ export function POForm({ suppliers, products }: POFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="expected_date">Expected Delivery Date</Label>
+              <Label htmlFor="expected_date">{t.expectedDate}</Label>
               <Input
                 id="expected_date"
                 type="date"
@@ -178,13 +181,13 @@ export function POForm({ suppliers, products }: POFormProps) {
           </div>
 
           <div className="mt-4 space-y-2">
-            <Label htmlFor="notes">Notes</Label>
+            <Label htmlFor="notes">{t.notes}</Label>
             <Textarea
               id="notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               disabled={isPending}
-              placeholder="Optional notes..."
+              placeholder={t.notesPlaceholder}
             />
           </div>
         </CardContent>
@@ -193,7 +196,7 @@ export function POForm({ suppliers, products }: POFormProps) {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Line Items</CardTitle>
+            <CardTitle>{t.lineItems}</CardTitle>
             <Button
               type="button"
               variant="outline"
@@ -201,7 +204,7 @@ export function POForm({ suppliers, products }: POFormProps) {
               onClick={addLineItem}
             >
               <Plus className="mr-2 h-4 w-4" />
-              Add Item
+              {t.addItem}
             </Button>
           </div>
         </CardHeader>
@@ -209,10 +212,10 @@ export function POForm({ suppliers, products }: POFormProps) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[40%]">Product</TableHead>
-                <TableHead className="w-[15%]">Quantity</TableHead>
-                <TableHead className="w-[20%]">Unit Cost</TableHead>
-                <TableHead className="w-[15%] text-right">Line Total</TableHead>
+                <TableHead className="w-[40%]">{t.product}</TableHead>
+                <TableHead className="w-[15%]">{t.quantity}</TableHead>
+                <TableHead className="w-[20%]">{t.unitCost}</TableHead>
+                <TableHead className="w-[15%] text-right">{t.lineTotal}</TableHead>
                 <TableHead className="w-[10%]" />
               </TableRow>
             </TableHeader>
@@ -227,7 +230,7 @@ export function POForm({ suppliers, products }: POFormProps) {
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select product" />
+                        <SelectValue placeholder={t.selectProduct} />
                       </SelectTrigger>
                       <SelectContent>
                         {products.map((p) => (
@@ -293,11 +296,11 @@ export function POForm({ suppliers, products }: POFormProps) {
           <div className="mt-4 flex justify-end">
             <div className="w-64 space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Subtotal</span>
+                <span className="text-muted-foreground">{t.subtotal}</span>
                 <span className="font-medium">{formatCurrency(subtotal)}</span>
               </div>
               <div className="flex justify-between border-t pt-2 text-base font-semibold">
-                <span>Total</span>
+                <span>{tc.total}</span>
                 <span>{formatCurrency(subtotal)}</span>
               </div>
             </div>
@@ -313,14 +316,14 @@ export function POForm({ suppliers, products }: POFormProps) {
 
       <div className="flex gap-3">
         <Button type="submit" disabled={isPending}>
-          {isPending ? "Creating..." : "Create Purchase Order"}
+          {isPending ? tc.creating : t.createPurchaseOrder}
         </Button>
         <Button
           type="button"
           variant="outline"
           onClick={() => router.push("/purchases")}
         >
-          Cancel
+          {tc.cancel}
         </Button>
       </div>
     </form>

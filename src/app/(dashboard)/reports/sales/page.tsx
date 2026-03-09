@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatCurrency } from "@/lib/utils/format";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SalesReportClient } from "./sales-report-client";
+import { getTranslations } from "@/lib/i18n/t-server";
 
 export default async function SalesReportPage({
   searchParams,
@@ -20,6 +21,8 @@ export default async function SalesReportPage({
 
   const start = params.start || thirtyDaysAgo;
   const end = params.end || today;
+
+  const t = await getTranslations("reports");
 
   const { data: dailySales } = await supabase
     .from("v_daily_sales")
@@ -47,12 +50,12 @@ export default async function SalesReportPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Sales Report</h1>
+      <h1 className="text-3xl font-bold">{t.salesReport}</h1>
 
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+            <CardTitle className="text-sm font-medium">{t.totalRevenue}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -62,7 +65,7 @@ export default async function SalesReportPage({
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Transactions</CardTitle>
+            <CardTitle className="text-sm font-medium">{t.transactions}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalTransactions}</div>
@@ -70,7 +73,7 @@ export default async function SalesReportPage({
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Avg Basket</CardTitle>
+            <CardTitle className="text-sm font-medium">{t.avgBasket}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -80,7 +83,7 @@ export default async function SalesReportPage({
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Discounts</CardTitle>
+            <CardTitle className="text-sm font-medium">{t.discounts}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">

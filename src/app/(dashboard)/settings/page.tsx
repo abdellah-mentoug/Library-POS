@@ -2,28 +2,30 @@ import { requireAdmin } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Store } from "lucide-react";
 import Link from "next/link";
-
-const settingsLinks = [
-  {
-    title: "User Management",
-    description: "Create and manage employee accounts, assign roles",
-    href: "/settings/users",
-    icon: Users,
-  },
-  {
-    title: "Store Settings",
-    description: "View store configuration, currency, and receipt settings",
-    href: "/settings/store",
-    icon: Store,
-  },
-];
+import { getTranslations } from "@/lib/i18n/t-server";
 
 export default async function SettingsPage() {
   await requireAdmin();
+  const t = await getTranslations("settings");
+
+  const settingsLinks = [
+    {
+      title: t.userManagement,
+      description: t.userManagementDesc,
+      href: "/settings/users",
+      icon: Users,
+    },
+    {
+      title: t.storeSettings,
+      description: t.storeSettingsDesc,
+      href: "/settings/store",
+      icon: Store,
+    },
+  ];
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Settings</h1>
+      <h1 className="text-3xl font-bold">{t.title}</h1>
       <div className="grid gap-4 md:grid-cols-2">
         {settingsLinks.map((item) => {
           const Icon = item.icon;

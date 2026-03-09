@@ -19,6 +19,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 interface User {
   id: string;
@@ -39,6 +40,8 @@ export function UserForm({ open, onOpenChange, user }: UserFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [role, setRole] = useState(user?.role || "employee");
+  const t = useTranslations("settings");
+  const tc = useTranslations("common");
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -51,11 +54,11 @@ export function UserForm({ open, onOpenChange, user }: UserFormProps) {
       const fullName = formData.get("full_name") as string;
 
       if (!email || !password || !fullName) {
-        setError("All fields are required");
+        setError(t.allFieldsRequired);
         return;
       }
       if (password.length < 6) {
-        setError("Password must be at least 6 characters");
+        setError(t.passwordMinLength);
         return;
       }
 
@@ -66,14 +69,14 @@ export function UserForm({ open, onOpenChange, user }: UserFormProps) {
         if (result && "error" in result && result.error) {
           setError(result.error as string);
         } else {
-          toast.success("User created successfully");
+          toast.success(t.userCreated);
           onOpenChange(false);
         }
       });
     } else {
       const fullName = formData.get("full_name") as string;
       if (!fullName) {
-        setError("Name is required");
+        setError(t.nameRequired);
         return;
       }
 
@@ -85,7 +88,7 @@ export function UserForm({ open, onOpenChange, user }: UserFormProps) {
         if (result && "error" in result && result.error) {
           setError(result.error as string);
         } else {
-          toast.success("User updated");
+          toast.success(t.userUpdated);
           onOpenChange(false);
         }
       });
@@ -106,14 +109,14 @@ export function UserForm({ open, onOpenChange, user }: UserFormProps) {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            {mode === "create" ? "Add User" : "Edit User"}
+            {mode === "create" ? t.addUser : t.editUser}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode === "create" && (
             <>
               <div className="space-y-2">
-                <Label htmlFor="email">Email *</Label>
+                <Label htmlFor="email">{t.emailRequired}</Label>
                 <Input
                   id="email"
                   name="email"
@@ -123,7 +126,7 @@ export function UserForm({ open, onOpenChange, user }: UserFormProps) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Password *</Label>
+                <Label htmlFor="password">{t.passwordRequired}</Label>
                 <Input
                   id="password"
                   name="password"
@@ -137,7 +140,7 @@ export function UserForm({ open, onOpenChange, user }: UserFormProps) {
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="full_name">Full Name *</Label>
+            <Label htmlFor="full_name">{t.fullNameRequired}</Label>
             <Input
               id="full_name"
               name="full_name"
@@ -148,14 +151,14 @@ export function UserForm({ open, onOpenChange, user }: UserFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label>Role</Label>
+            <Label>{t.role}</Label>
             <Select value={role} onValueChange={setRole}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="employee">Employee</SelectItem>
+                <SelectItem value="admin">{t.admin}</SelectItem>
+                <SelectItem value="employee">{t.employee}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -172,14 +175,14 @@ export function UserForm({ open, onOpenChange, user }: UserFormProps) {
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              {tc.cancel}
             </Button>
             <Button type="submit" disabled={isPending}>
               {isPending
-                ? "Saving..."
+                ? tc.saving
                 : mode === "create"
-                  ? "Create User"
-                  : "Save Changes"}
+                  ? t.createUser
+                  : t.saveChanges}
             </Button>
           </div>
         </form>

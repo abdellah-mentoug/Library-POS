@@ -2,6 +2,8 @@
 
 import { useCartStore, useCartTotals } from "@/lib/store/cart-store";
 import { formatCurrency } from "@/lib/utils/format";
+import { useTranslations } from "@/lib/i18n/use-translations";
+import { interpolate } from "@/lib/i18n/locales";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,6 +23,7 @@ interface CartProps {
 }
 
 export function Cart({ onCheckout }: CartProps) {
+  const t = useTranslations("pos");
   const items = useCartStore((s) => s.items);
   const updateQuantity = useCartStore((s) => s.updateQuantity);
   const removeItem = useCartStore((s) => s.removeItem);
@@ -40,7 +43,7 @@ export function Cart({ onCheckout }: CartProps) {
       <div className="flex h-full flex-col items-center justify-center text-center">
         <ShoppingCart className="mb-4 h-12 w-12 text-muted-foreground" />
         <p className="text-muted-foreground">
-          Scan a barcode or search for a product to start
+          {t.scanOrSearch}
         </p>
       </div>
     );
@@ -50,10 +53,10 @@ export function Cart({ onCheckout }: CartProps) {
     <div className="flex h-full flex-col">
       <div className="mb-2 flex items-center justify-between">
         <h3 className="font-semibold">
-          Cart ({itemCount} item{itemCount !== 1 ? "s" : ""})
+          {interpolate(itemCount === 1 ? t.cartItems : t.cartItemsPlural, { count: itemCount })}
         </h3>
         <Button variant="ghost" size="sm" onClick={clearCart}>
-          Clear
+          {t.clearCart}
         </Button>
       </div>
 
@@ -109,7 +112,7 @@ export function Cart({ onCheckout }: CartProps) {
               </div>
               <div className="text-right">
                 <p className="text-xs text-muted-foreground">
-                  {formatCurrency(item.unitPrice)} each
+                  {interpolate(t.each, { price: formatCurrency(item.unitPrice) })}
                 </p>
                 <p className="text-sm font-semibold">
                   {formatCurrency(item.lineTotal)}
@@ -119,7 +122,7 @@ export function Cart({ onCheckout }: CartProps) {
 
             {/* Per-item discount */}
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">Discount:</span>
+              <span className="text-xs text-muted-foreground">{t.discount}:</span>
               <Input
                 type="number"
                 min="0"
@@ -143,7 +146,7 @@ export function Cart({ onCheckout }: CartProps) {
 
       {/* Cart discount */}
       <div className="space-y-2">
-        <Label className="text-xs">Cart Discount</Label>
+        <Label className="text-xs">{t.cartDiscount}</Label>
         <div className="flex gap-2">
           <Select
             value={discountType || "none"}
@@ -158,9 +161,9 @@ export function Cart({ onCheckout }: CartProps) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="none">None</SelectItem>
-              <SelectItem value="fixed">Fixed</SelectItem>
-              <SelectItem value="percentage">Percent (%)</SelectItem>
+              <SelectItem value="none">{t.none}</SelectItem>
+              <SelectItem value="fixed">{t.fixed}</SelectItem>
+              <SelectItem value="percentage">{t.percent}</SelectItem>
             </SelectContent>
           </Select>
           {discountType && (
@@ -180,10 +183,10 @@ export function Cart({ onCheckout }: CartProps) {
 
       {/* Notes */}
       <div className="mt-2 space-y-1">
-        <Label className="text-xs">Notes</Label>
+        <Label className="text-xs">{t.notes}</Label>
         <Textarea
           className="h-16 text-xs"
-          placeholder="Optional notes..."
+          placeholder={t.notesPlaceholder}
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
         />
@@ -194,30 +197,30 @@ export function Cart({ onCheckout }: CartProps) {
       {/* Totals */}
       <div className="space-y-1 text-sm">
         <div className="flex justify-between">
-          <span className="text-muted-foreground">Subtotal</span>
+          <span className="text-muted-foreground">{t.subtotal}</span>
           <span>{formatCurrency(subtotal)}</span>
         </div>
         {taxTotal > 0 && (
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Tax</span>
+            <span className="text-muted-foreground">{t.tax}</span>
             <span>{formatCurrency(taxTotal)}</span>
           </div>
         )}
         {cartDiscount > 0 && (
           <div className="flex justify-between text-green-600">
-            <span>Discount</span>
+            <span>{t.discount}</span>
             <span>-{formatCurrency(cartDiscount)}</span>
           </div>
         )}
         <Separator />
         <div className="flex justify-between text-lg font-bold">
-          <span>Total</span>
+          <span>{t.total}</span>
           <span>{formatCurrency(total)}</span>
         </div>
       </div>
 
       <Button className="mt-3 w-full" size="lg" onClick={onCheckout}>
-        Charge {formatCurrency(total)}
+        {interpolate(t.charge, { amount: formatCurrency(total) })}
       </Button>
     </div>
   );

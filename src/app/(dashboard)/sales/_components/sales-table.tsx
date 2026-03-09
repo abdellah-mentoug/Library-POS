@@ -18,6 +18,7 @@ import {
   formatDateTime,
   formatSaleNumber,
 } from "@/lib/utils/format";
+import { useTranslations } from "@/lib/i18n/use-translations";
 import { Eye, Search, ArrowUpDown } from "lucide-react";
 import Link from "next/link";
 
@@ -37,6 +38,7 @@ interface SalesTableProps {
 }
 
 export function SalesTable({ sales }: SalesTableProps) {
+  const t = useTranslations("sales");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
@@ -67,7 +69,7 @@ export function SalesTable({ sales }: SalesTableProps) {
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Sale #
+          {t.saleNumber}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -87,7 +89,7 @@ export function SalesTable({ sales }: SalesTableProps) {
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Date
+          {t.date}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -95,30 +97,30 @@ export function SalesTable({ sales }: SalesTableProps) {
     },
     {
       id: "customer",
-      header: "Customer",
+      header: t.customer,
       cell: ({ row }) => {
         const c = Array.isArray(row.original.customers) ? row.original.customers[0] : row.original.customers;
-        return c?.name || <span className="text-muted-foreground">Walk-in</span>;
+        return c?.name || <span className="text-muted-foreground">{t.walkIn}</span>;
       },
     },
     {
       id: "cashier",
-      header: "Cashier",
+      header: t.cashier,
       cell: ({ row }) => {
         const p = Array.isArray(row.original.profiles) ? row.original.profiles[0] : row.original.profiles;
-        return p?.full_name || <span className="text-muted-foreground">—</span>;
+        return p?.full_name || <span className="text-muted-foreground">{"\u2014"}</span>;
       },
     },
     {
       accessorKey: "payment_method",
-      header: "Payment",
+      header: t.payment,
       cell: ({ row }) => (
         <span className="capitalize">{row.original.payment_method}</span>
       ),
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: t.status,
       cell: ({ row }) => (
         <Badge
           variant={
@@ -126,7 +128,7 @@ export function SalesTable({ sales }: SalesTableProps) {
           }
           className="capitalize"
         >
-          {row.original.status}
+          {row.original.status === "completed" ? t.completed : t.voided}
         </Badge>
       ),
     },
@@ -138,7 +140,7 @@ export function SalesTable({ sales }: SalesTableProps) {
           className="w-full justify-end"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Total
+          {t.total}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -166,7 +168,7 @@ export function SalesTable({ sales }: SalesTableProps) {
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search by sale # or customer..."
+            placeholder={t.searchPlaceholder}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9"
@@ -177,9 +179,9 @@ export function SalesTable({ sales }: SalesTableProps) {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
-            <SelectItem value="voided">Voided</SelectItem>
+            <SelectItem value="all">{t.allStatus}</SelectItem>
+            <SelectItem value="completed">{t.completed}</SelectItem>
+            <SelectItem value="voided">{t.voided}</SelectItem>
           </SelectContent>
         </Select>
       </div>

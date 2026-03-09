@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Eye, Search, ArrowUpDown } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 interface PurchaseOrder {
   id: string;
@@ -27,6 +28,8 @@ interface POTableProps {
 }
 
 export function POTable({ purchaseOrders }: POTableProps) {
+  const t = useTranslations("purchases");
+  const tc = useTranslations("common");
   const [search, setSearch] = useState("");
 
   const filtered = useMemo(() => {
@@ -47,7 +50,7 @@ export function POTable({ purchaseOrders }: POTableProps) {
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          PO #
+          {t.poNumber}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -62,15 +65,15 @@ export function POTable({ purchaseOrders }: POTableProps) {
     },
     {
       id: "supplier",
-      header: "Supplier",
+      header: t.supplier,
       cell: ({ row }) =>
         row.original.suppliers?.name || (
-          <span className="text-muted-foreground">Unknown</span>
+          <span className="text-muted-foreground">{t.unknown}</span>
         ),
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: tc.status,
       cell: ({ row }) => <POStatusBadge status={row.original.status} />,
     },
     {
@@ -81,7 +84,7 @@ export function POTable({ purchaseOrders }: POTableProps) {
           className="w-full justify-end"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Total
+          {tc.total}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -93,7 +96,7 @@ export function POTable({ purchaseOrders }: POTableProps) {
     },
     {
       accessorKey: "expected_date",
-      header: "Expected",
+      header: t.expected,
       cell: ({ row }) =>
         row.original.expected_date ? (
           formatDate(row.original.expected_date)
@@ -108,7 +111,7 @@ export function POTable({ purchaseOrders }: POTableProps) {
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Created
+          {t.created}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -131,7 +134,7 @@ export function POTable({ purchaseOrders }: POTableProps) {
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="Search by PO # or supplier..."
+          placeholder={t.searchPlaceholder}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-9"

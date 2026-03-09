@@ -35,6 +35,8 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "@/lib/i18n/use-translations";
+import { interpolate } from "@/lib/i18n/locales";
 
 interface Customer {
   id: string;
@@ -46,16 +48,18 @@ interface PrintOrderFormProps {
   customers: Customer[];
 }
 
-const SERVICE_TYPES = [
-  { value: "printing", label: "Printing" },
-  { value: "copying", label: "Copying" },
-  { value: "binding", label: "Binding" },
-  { value: "laminating", label: "Laminating" },
-  { value: "scanning", label: "Scanning" },
-  { value: "other", label: "Other" },
-] as const;
-
 export function PrintOrderForm({ customers }: PrintOrderFormProps) {
+  const t = useTranslations("printOrders");
+  const tc = useTranslations("common");
+
+  const SERVICE_TYPES = [
+    { value: "printing", label: t.printing },
+    { value: "copying", label: t.copying },
+    { value: "binding", label: t.binding },
+    { value: "laminating", label: t.laminating },
+    { value: "scanning", label: t.scanning },
+    { value: "other", label: t.other },
+  ] as const;
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -154,13 +158,13 @@ export function PrintOrderForm({ customers }: PrintOrderFormProps) {
           setError(String(result.error));
         } else {
           toast.success(
-            `Print order ${result.orderNumber} created successfully`
+            interpolate(t.orderCreated, { number: result.orderNumber })
           );
           router.push("/print-orders");
         }
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "Failed to create print order"
+          err instanceof Error ? err.message : t.createFailed
         );
       }
     });
@@ -171,14 +175,14 @@ export function PrintOrderForm({ customers }: PrintOrderFormProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>New Print Order</CardTitle>
+        <CardTitle>{t.createOrder}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Customer Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <Label className="text-base font-semibold">Customer</Label>
+              <Label className="text-base font-semibold">{t.customer}</Label>
               <div className="flex items-center gap-2">
                 <Switch
                   id="new-customer"
@@ -187,7 +191,7 @@ export function PrintOrderForm({ customers }: PrintOrderFormProps) {
                   disabled={isPending}
                 />
                 <Label htmlFor="new-customer" className="text-sm font-normal">
-                  New customer
+                  {t.newCustomer}
                 </Label>
               </div>
             </div>
@@ -195,23 +199,23 @@ export function PrintOrderForm({ customers }: PrintOrderFormProps) {
             {isNewCustomer ? (
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="customer_name">Name *</Label>
+                  <Label htmlFor="customer_name">{t.customerName}</Label>
                   <Input
                     id="customer_name"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    placeholder="Customer name"
+                    placeholder={t.customerNamePlaceholder}
                     required
                     disabled={isPending}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="customer_phone">Phone</Label>
+                  <Label htmlFor="customer_phone">{t.customerPhone}</Label>
                   <Input
                     id="customer_phone"
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
-                    placeholder="Phone number"
+                    placeholder={t.customerPhonePlaceholder}
                     disabled={isPending}
                   />
                 </div>
@@ -219,7 +223,7 @@ export function PrintOrderForm({ customers }: PrintOrderFormProps) {
             ) : (
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label>Select Customer *</Label>
+                  <Label>{t.selectCustomer}</Label>
                   <Popover open={customerOpen} onOpenChange={setCustomerOpen}>
                     <PopoverTrigger asChild>
                       <Button
@@ -232,15 +236,15 @@ export function PrintOrderForm({ customers }: PrintOrderFormProps) {
                       >
                         {selectedCustomer
                           ? selectedCustomer.name
-                          : "Search customers..."}
+                          : t.searchCustomers}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-[300px] p-0">
                       <Command>
-                        <CommandInput placeholder="Search customers..." />
+                        <CommandInput placeholder={t.searchCustomers} />
                         <CommandList>
-                          <CommandEmpty>No customer found.</CommandEmpty>
+                          <CommandEmpty>{t.noCustomerFound}</CommandEmpty>
                           <CommandGroup>
                             {customers.map((customer) => (
                               <CommandItem
@@ -276,7 +280,7 @@ export function PrintOrderForm({ customers }: PrintOrderFormProps) {
                 </div>
                 {selectedCustomer && (
                   <div className="space-y-2">
-                    <Label>Phone</Label>
+                    <Label>{t.customerPhone}</Label>
                     <Input
                       value={customerPhone}
                       disabled
@@ -291,14 +295,14 @@ export function PrintOrderForm({ customers }: PrintOrderFormProps) {
           {/* Service Details */}
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="service_type">Service Type *</Label>
+              <Label htmlFor="service_type">{t.serviceType}</Label>
               <Select
                 value={serviceType}
                 onValueChange={setServiceType}
                 disabled={isPending}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select service type" />
+                  <SelectValue placeholder={t.selectServiceType} />
                 </SelectTrigger>
                 <SelectContent>
                   {SERVICE_TYPES.map((type) => (
@@ -311,7 +315,7 @@ export function PrintOrderForm({ customers }: PrintOrderFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label>Due Date</Label>
+              <Label>{t.dueDate}</Label>
               <Popover open={dueDateOpen} onOpenChange={setDueDateOpen}>
                 <PopoverTrigger asChild>
                   <Button
@@ -324,7 +328,7 @@ export function PrintOrderForm({ customers }: PrintOrderFormProps) {
                     type="button"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dueDate ? format(dueDate, "MMM dd, yyyy") : "Pick a date"}
+                    {dueDate ? format(dueDate, "MMM dd, yyyy") : t.pickDate}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -343,12 +347,12 @@ export function PrintOrderForm({ customers }: PrintOrderFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description *</Label>
+            <Label htmlFor="description">{t.description}</Label>
             <Textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="e.g., 20 pages color, A4, double-sided"
+              placeholder={t.descriptionPlaceholder}
               required
               disabled={isPending}
               rows={3}
@@ -358,7 +362,7 @@ export function PrintOrderForm({ customers }: PrintOrderFormProps) {
           {/* Pricing */}
           <div className="grid gap-4 md:grid-cols-3">
             <div className="space-y-2">
-              <Label htmlFor="quantity">Quantity</Label>
+              <Label htmlFor="quantity">{t.quantity}</Label>
               <Input
                 id="quantity"
                 type="number"
@@ -370,7 +374,7 @@ export function PrintOrderForm({ customers }: PrintOrderFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="unit_price">Unit Price</Label>
+              <Label htmlFor="unit_price">{t.unitPrice}</Label>
               <Input
                 id="unit_price"
                 type="number"
@@ -383,7 +387,7 @@ export function PrintOrderForm({ customers }: PrintOrderFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="total_price">Total Price</Label>
+              <Label htmlFor="total_price">{t.totalPrice}</Label>
               <Input
                 id="total_price"
                 type="number"
@@ -402,19 +406,19 @@ export function PrintOrderForm({ customers }: PrintOrderFormProps) {
                     setTotalPrice(quantity * unitPrice);
                   }}
                 >
-                  Reset to auto-calculate
+                  {t.resetAutoCalc}
                 </button>
               )}
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">Notes</Label>
+            <Label htmlFor="notes">{t.notes}</Label>
             <Textarea
               id="notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Optional notes..."
+              placeholder={t.notesPlaceholder}
               disabled={isPending}
               rows={2}
             />
@@ -428,14 +432,14 @@ export function PrintOrderForm({ customers }: PrintOrderFormProps) {
 
           <div className="flex gap-3">
             <Button type="submit" disabled={isPending}>
-              {isPending ? "Creating..." : "Create Print Order"}
+              {isPending ? tc.creating : t.createOrder}
             </Button>
             <Button
               type="button"
               variant="outline"
               onClick={() => router.push("/print-orders")}
             >
-              Cancel
+              {tc.cancel}
             </Button>
           </div>
         </form>

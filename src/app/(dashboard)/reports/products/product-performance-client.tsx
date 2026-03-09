@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { ExportButtons } from "../_components/export-buttons";
 import { Search, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 interface Product {
   product_id: string;
@@ -26,6 +27,7 @@ interface Props {
 }
 
 export function ProductPerformanceClient({ products }: Props) {
+  const t = useTranslations("reports");
   const [search, setSearch] = useState("");
 
   const filtered = useMemo(() => {
@@ -42,14 +44,14 @@ export function ProductPerformanceClient({ products }: Props) {
   const columns: ColumnDef<Product>[] = [
     {
       accessorKey: "product_name",
-      header: "Product",
+      header: t.product,
       cell: ({ row }) => (
         <span className="font-medium">{row.original.product_name}</span>
       ),
     },
     {
       accessorKey: "category_name",
-      header: "Category",
+      header: t.category,
       cell: ({ row }) =>
         row.original.category_name || (
           <span className="text-muted-foreground">—</span>
@@ -57,7 +59,7 @@ export function ProductPerformanceClient({ products }: Props) {
     },
     {
       accessorKey: "purchase_price",
-      header: "Price",
+      header: t.price,
       cell: ({ row }) => formatCurrency(row.original.purchase_price),
     },
     {
@@ -67,7 +69,7 @@ export function ProductPerformanceClient({ products }: Props) {
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Sold
+          {t.sold}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -83,7 +85,7 @@ export function ProductPerformanceClient({ products }: Props) {
           className="w-full justify-end"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Revenue
+          {t.revenue}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -101,7 +103,7 @@ export function ProductPerformanceClient({ products }: Props) {
           className="w-full justify-end"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Profit
+          {t.profit}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -113,7 +115,7 @@ export function ProductPerformanceClient({ products }: Props) {
     },
     {
       accessorKey: "stock_quantity",
-      header: "Stock",
+      header: t.stock,
       cell: ({ row }) => (
         <div className="text-center">{row.original.stock_quantity}</div>
       ),
@@ -136,7 +138,7 @@ export function ProductPerformanceClient({ products }: Props) {
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search by name, category, barcode..."
+            placeholder={t.searchProducts}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9"

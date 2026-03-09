@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 interface Category {
   id: string;
@@ -46,6 +47,8 @@ interface ProductFormProps {
 
 export function ProductForm({ mode, product, categories }: ProductFormProps) {
   const router = useRouter();
+  const t = useTranslations("products");
+  const tc = useTranslations("common");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const parents = categories.filter((c) => !c.parent_id);
@@ -94,7 +97,7 @@ export function ProductForm({ mode, product, categories }: ProductFormProps) {
         setError(result.error as string);
       } else {
         toast.success(
-          mode === "create" ? "Product created" : "Product updated"
+          mode === "create" ? t.productCreated : t.productUpdated
         );
         router.push("/products");
       }
@@ -105,14 +108,14 @@ export function ProductForm({ mode, product, categories }: ProductFormProps) {
     <Card>
       <CardHeader>
         <CardTitle>
-          {mode === "create" ? "New Product" : "Edit Product"}
+          {mode === "create" ? t.newProduct : t.editProduct}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="name">Name *</Label>
+              <Label htmlFor="name">{t.name}</Label>
               <Input
                 id="name"
                 name="name"
@@ -123,19 +126,19 @@ export function ProductForm({ mode, product, categories }: ProductFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="barcode">Barcode (ISBN-13)</Label>
+              <Label htmlFor="barcode">{t.barcode}</Label>
               <Input
                 id="barcode"
                 name="barcode"
                 maxLength={13}
                 defaultValue={product?.barcode || ""}
                 disabled={isPending}
-                placeholder="Scan or enter manually"
+                placeholder={t.scanOrEnter}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="sku">SKU</Label>
+              <Label htmlFor="sku">{t.sku}</Label>
               <Input
                 id="sku"
                 name="sku"
@@ -145,16 +148,16 @@ export function ProductForm({ mode, product, categories }: ProductFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="category_id">Category</Label>
+              <Label htmlFor="category_id">{t.category}</Label>
               <Select
                 name="category_id"
                 defaultValue={product?.category_id || "none"}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
+                  <SelectValue placeholder={t.selectCategory} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">No category</SelectItem>
+                  <SelectItem value="none">{t.noCategory}</SelectItem>
                   {parents.map((parent) => (
                     <div key={parent.id}>
                       <SelectItem value={parent.id} className="font-medium">
@@ -172,7 +175,7 @@ export function ProductForm({ mode, product, categories }: ProductFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="purchase_price">Price *</Label>
+              <Label htmlFor="purchase_price">{t.price}</Label>
               <Input
                 id="purchase_price"
                 name="purchase_price"
@@ -186,7 +189,7 @@ export function ProductForm({ mode, product, categories }: ProductFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="tax_rate">Tax Rate (%)</Label>
+              <Label htmlFor="tax_rate">{t.taxRate}</Label>
               <Input
                 id="tax_rate"
                 name="tax_rate"
@@ -201,7 +204,7 @@ export function ProductForm({ mode, product, categories }: ProductFormProps) {
 
             {mode === "create" && (
               <div className="space-y-2">
-                <Label htmlFor="stock_quantity">Initial Stock</Label>
+                <Label htmlFor="stock_quantity">{t.initialStock}</Label>
                 <Input
                   id="stock_quantity"
                   name="stock_quantity"
@@ -214,7 +217,7 @@ export function ProductForm({ mode, product, categories }: ProductFormProps) {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="low_stock_threshold">Low Stock Threshold</Label>
+              <Label htmlFor="low_stock_threshold">{t.lowStockThreshold}</Label>
               <Input
                 id="low_stock_threshold"
                 name="low_stock_threshold"
@@ -226,23 +229,23 @@ export function ProductForm({ mode, product, categories }: ProductFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="unit">Unit</Label>
+              <Label htmlFor="unit">{t.unit}</Label>
               <Select name="unit" defaultValue={product?.unit || "piece"}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="piece">Piece</SelectItem>
-                  <SelectItem value="pack">Pack</SelectItem>
-                  <SelectItem value="box">Box</SelectItem>
-                  <SelectItem value="ream">Ream</SelectItem>
+                  <SelectItem value="piece">{t.piece}</SelectItem>
+                  <SelectItem value="pack">{t.pack}</SelectItem>
+                  <SelectItem value="box">{t.box}</SelectItem>
+                  <SelectItem value="ream">{t.ream}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t.description}</Label>
             <Textarea
               id="description"
               name="description"
@@ -260,17 +263,17 @@ export function ProductForm({ mode, product, categories }: ProductFormProps) {
           <div className="flex gap-3">
             <Button type="submit" disabled={isPending}>
               {isPending
-                ? "Saving..."
+                ? tc.saving
                 : mode === "create"
-                  ? "Create Product"
-                  : "Update Product"}
+                  ? t.createProduct
+                  : t.updateProduct}
             </Button>
             <Button
               type="button"
               variant="outline"
               onClick={() => router.push("/products")}
             >
-              Cancel
+              {tc.cancel}
             </Button>
           </div>
         </form>

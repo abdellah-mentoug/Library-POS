@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { useTranslations } from "@/lib/i18n/use-translations";
 
 interface Category {
   id: string;
@@ -42,6 +43,8 @@ export function CategoryForm({
   parentCategories,
   trigger,
 }: CategoryFormProps) {
+  const t = useTranslations("categories");
+  const tc = useTranslations("common");
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -75,7 +78,7 @@ export function CategoryForm({
       if (result && "error" in result && result.error) {
         setError(result.error as string);
       } else {
-        toast.success(isEdit ? "Category updated" : "Category created");
+        toast.success(isEdit ? t.categoryUpdated : t.categoryCreated);
         setOpen(false);
       }
     });
@@ -87,12 +90,12 @@ export function CategoryForm({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {isEdit ? "Edit Category" : "New Category"}
+            {isEdit ? t.editCategory : t.newCategory}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Name *</Label>
+            <Label htmlFor="name">{t.name}</Label>
             <Input
               id="name"
               name="name"
@@ -103,7 +106,7 @@ export function CategoryForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t.description}</Label>
             <Textarea
               id="description"
               name="description"
@@ -113,16 +116,16 @@ export function CategoryForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="parent_id">Parent Category</Label>
+            <Label htmlFor="parent_id">{t.parentCategory}</Label>
             <Select
               name="parent_id"
               defaultValue={category?.parent_id || "none"}
             >
               <SelectTrigger>
-                <SelectValue placeholder="None (top-level)" />
+                <SelectValue placeholder={t.noneTopLevel} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">None (top-level)</SelectItem>
+                <SelectItem value="none">{t.noneTopLevel}</SelectItem>
                 {parentCategories.map((cat) => (
                   <SelectItem key={cat.id} value={cat.id}>
                     {cat.name}
@@ -133,7 +136,7 @@ export function CategoryForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="sort_order">Sort Order</Label>
+            <Label htmlFor="sort_order">{t.sortOrder}</Label>
             <Input
               id="sort_order"
               name="sort_order"
@@ -151,10 +154,10 @@ export function CategoryForm({
 
           <Button type="submit" className="w-full" disabled={isPending}>
             {isPending
-              ? "Saving..."
+              ? tc.saving
               : isEdit
-                ? "Update Category"
-                : "Create Category"}
+                ? t.updateCategory
+                : t.createCategory}
           </Button>
         </form>
       </DialogContent>

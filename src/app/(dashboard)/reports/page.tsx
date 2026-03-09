@@ -2,40 +2,42 @@ import { getAuthUser } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart3, Package, AlertTriangle, Printer } from "lucide-react";
 import Link from "next/link";
-
-const reports = [
-  {
-    title: "Sales Report",
-    description: "Daily sales revenue, transactions, and trends",
-    href: "/reports/sales",
-    icon: BarChart3,
-  },
-  {
-    title: "Product Performance",
-    description: "Top selling products, revenue, and profit analysis",
-    href: "/reports/products",
-    icon: Package,
-  },
-  {
-    title: "Stock Report",
-    description: "Low stock alerts and reorder suggestions",
-    href: "/reports/stock",
-    icon: AlertTriangle,
-  },
-  {
-    title: "Print Order Report",
-    description: "Print order volume, revenue, and status breakdown",
-    href: "/reports/print-orders",
-    icon: Printer,
-  },
-];
+import { getTranslations } from "@/lib/i18n/t-server";
 
 export default async function ReportsPage() {
   await getAuthUser();
+  const t = await getTranslations("reports");
+
+  const reports = [
+    {
+      title: t.salesReport,
+      description: t.salesReportDesc,
+      href: "/reports/sales",
+      icon: BarChart3,
+    },
+    {
+      title: t.productPerformance,
+      description: t.productPerformanceDesc,
+      href: "/reports/products",
+      icon: Package,
+    },
+    {
+      title: t.stockReport,
+      description: t.stockReportDesc,
+      href: "/reports/stock",
+      icon: AlertTriangle,
+    },
+    {
+      title: t.printOrderReport,
+      description: t.printOrderReportDesc,
+      href: "/reports/print-orders",
+      icon: Printer,
+    },
+  ];
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Reports</h1>
+      <h1 className="text-3xl font-bold">{t.title}</h1>
       <div className="grid gap-4 md:grid-cols-2">
         {reports.map((report) => {
           const Icon = report.icon;

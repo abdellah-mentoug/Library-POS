@@ -6,6 +6,8 @@ import { deletePrintOrderFile } from "@/lib/actions/print-orders";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Upload, File, Download, Trash2, Loader2 } from "lucide-react";
+import { useTranslations } from "@/lib/i18n/use-translations";
+import { interpolate } from "@/lib/i18n/locales";
 
 interface FileUploadProps {
   orderId: string;
@@ -47,6 +49,7 @@ export function FileUpload({
   onFilesChange,
   canDelete = false,
 }: FileUploadProps) {
+  const t = useTranslations("printOrders");
   const [isDragOver, setIsDragOver] = useState(false);
   const [uploadingFiles, setUploadingFiles] = useState<string[]>([]);
   const [deletingFiles, setDeletingFiles] = useState<string[]>([]);
@@ -66,12 +69,12 @@ export function FileUpload({
 
   async function uploadFile(file: File) {
     if (!ACCEPTED_TYPES.includes(file.type)) {
-      toast.error(`File type not supported: ${file.name}`);
+      toast.error(interpolate(t.fileTypeNotSupported, { name: file.name }));
       return null;
     }
 
     if (file.size > MAX_FILE_SIZE) {
-      toast.error(`File too large (max 50MB): ${file.name}`);
+      toast.error(interpolate(t.fileTooLarge, { name: file.name }));
       return null;
     }
 
@@ -83,7 +86,7 @@ export function FileUpload({
       .upload(storagePath, file);
 
     if (error) {
-      toast.error(`Failed to upload ${file.name}: ${error.message}`);
+      toast.error(interpolate(t.uploadFailed, { name: file.name, error: error.message }));
       return null;
     }
 
@@ -113,9 +116,7 @@ export function FileUpload({
     if (uploadedPaths.length > 0) {
       const newFiles = [...existingFiles, ...uploadedPaths];
       onFilesChange(newFiles);
-      toast.success(
-        `${uploadedPaths.length} file${uploadedPaths.length > 1 ? "s" : ""} uploaded`
-      );
+      toast.success(interpolate(t.filesUploaded, { count: uploadedPaths.length }));
     }
   }
 
@@ -149,7 +150,7 @@ export function FileUpload({
       .createSignedUrl(filePath, 3600); // 1 hour
 
     if (error || !data?.signedUrl) {
-      toast.error("Failed to generate download link");
+      toast.error(t.downloadFailed);
       return;
     }
 
@@ -167,11 +168,11 @@ export function FileUpload({
       } else {
         const updatedFiles = existingFiles.filter((p) => p !== filePath);
         onFilesChange(updatedFiles);
-        toast.success("File deleted");
+        toast.success(t.fileDeleted);
       }
     } catch (err) {
       toast.error(
-        err instanceof Error ? err.message : "Failed to delete file"
+        err instanceof Error ? err.message : t.deleteFileFailed
       );
     } finally {
       setDeletingFiles((prev) => prev.filter((p) => p !== filePath));
@@ -202,10 +203,10 @@ export function FileUpload({
       >
         <Upload className="mb-2 h-8 w-8 text-muted-foreground" />
         <p className="text-sm font-medium">
-          Drag and drop files here, or click to browse
+          {t.dragDrop}
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
-          PDF, JPEG, PNG, TIFF, DOC, DOCX, PPT, PPTX (max 50MB)
+          {t.fileTypes}
         </p>
       </div>
 
@@ -231,7 +232,7 @@ export function FileUpload({
               <File className="h-4 w-4 text-muted-foreground" />
               <span className="flex-1 truncate text-sm">{name}</span>
               <span className="text-xs text-muted-foreground">
-                Uploading...
+                {t.uploading}
               </span>
             </div>
           ))}

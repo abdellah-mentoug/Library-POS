@@ -1,5 +1,6 @@
 import { getAuthUser } from "@/lib/auth";
 import { getSale } from "@/lib/actions/sales";
+import { getTranslations } from "@/lib/i18n/t-server";
 import { SaleDetailActions } from "../_components/sale-detail-client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +24,7 @@ export default async function SaleDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const t = await getTranslations("sales");
   const user = await getAuthUser();
   const { id } = await params;
 
@@ -59,7 +61,7 @@ export default async function SaleDetailPage({
             }
             className="capitalize"
           >
-            {sale.status}
+            {sale.status === "completed" ? t.completed : t.voided}
           </Badge>
         </div>
         <SaleDetailActions
@@ -73,28 +75,28 @@ export default async function SaleDetailPage({
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Sale Info</CardTitle>
+            <CardTitle>{t.saleInfo}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div>
-              <p className="text-sm text-muted-foreground">Date</p>
+              <p className="text-sm text-muted-foreground">{t.date}</p>
               <p>{formatDateTime(sale.created_at)}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Cashier</p>
-              <p>{cashierData?.full_name || "Unknown"}</p>
+              <p className="text-sm text-muted-foreground">{t.cashier}</p>
+              <p>{cashierData?.full_name || t.unknown}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Customer</p>
-              <p>{customerData?.name || "Walk-in"}</p>
+              <p className="text-sm text-muted-foreground">{t.customer}</p>
+              <p>{customerData?.name || t.walkIn}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Payment Method</p>
+              <p className="text-sm text-muted-foreground">{t.paymentMethod}</p>
               <p className="capitalize">{sale.payment_method}</p>
             </div>
             {sale.notes && (
               <div>
-                <p className="text-sm text-muted-foreground">Notes</p>
+                <p className="text-sm text-muted-foreground">{t.items}</p>
                 <p className="whitespace-pre-wrap text-sm">{sale.notes}</p>
               </div>
             )}
@@ -103,38 +105,38 @@ export default async function SaleDetailPage({
 
         <Card>
           <CardHeader>
-            <CardTitle>Totals</CardTitle>
+            <CardTitle>{t.totals}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Subtotal</span>
+              <span className="text-muted-foreground">{t.subtotal}</span>
               <span>{formatCurrency(sale.subtotal)}</span>
             </div>
             {sale.tax_total > 0 && (
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Tax</span>
+                <span className="text-muted-foreground">{t.tax}</span>
                 <span>{formatCurrency(sale.tax_total)}</span>
               </div>
             )}
             {sale.discount_amount > 0 && (
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Discount</span>
+                <span className="text-muted-foreground">{t.discount}</span>
                 <span className="text-destructive">
                   -{formatCurrency(sale.discount_amount)}
                 </span>
               </div>
             )}
             <div className="flex justify-between border-t pt-2 text-lg font-semibold">
-              <span>Total</span>
+              <span>{t.total}</span>
               <span>{formatCurrency(sale.total)}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Amount Paid</span>
+              <span className="text-muted-foreground">{t.amountPaid}</span>
               <span>{formatCurrency(sale.amount_paid)}</span>
             </div>
             {sale.change_given > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Change</span>
+                <span className="text-muted-foreground">{t.change}</span>
                 <span>{formatCurrency(sale.change_given)}</span>
               </div>
             )}
@@ -145,22 +147,22 @@ export default async function SaleDetailPage({
       {sale.status === "voided" && (
         <Card className="border-destructive">
           <CardHeader>
-            <CardTitle className="text-destructive">Void Details</CardTitle>
+            <CardTitle className="text-destructive">{t.voidDetails}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <div>
-              <p className="text-sm text-muted-foreground">Voided By</p>
-              <p>{voidedByData?.full_name || "Unknown"}</p>
+              <p className="text-sm text-muted-foreground">{t.voidedBy}</p>
+              <p>{voidedByData?.full_name || t.unknown}</p>
             </div>
             {sale.voided_at && (
               <div>
-                <p className="text-sm text-muted-foreground">Voided At</p>
+                <p className="text-sm text-muted-foreground">{t.voidedAt}</p>
                 <p>{formatDateTime(sale.voided_at)}</p>
               </div>
             )}
             {sale.void_reason && (
               <div>
-                <p className="text-sm text-muted-foreground">Reason</p>
+                <p className="text-sm text-muted-foreground">{t.reason}</p>
                 <p>{sale.void_reason}</p>
               </div>
             )}
@@ -170,17 +172,17 @@ export default async function SaleDetailPage({
 
       <Card>
         <CardHeader>
-          <CardTitle>Items ({saleItems.length})</CardTitle>
+          <CardTitle>{t.items} ({saleItems.length})</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead className="text-center">Qty</TableHead>
-                <TableHead className="text-right">Unit Price</TableHead>
-                <TableHead className="text-right">Discount</TableHead>
-                <TableHead className="text-right">Total</TableHead>
+                <TableHead>{t.product}</TableHead>
+                <TableHead className="text-center">{t.qty}</TableHead>
+                <TableHead className="text-right">{t.unitPrice}</TableHead>
+                <TableHead className="text-right">{t.discount}</TableHead>
+                <TableHead className="text-right">{t.total}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -198,7 +200,7 @@ export default async function SaleDetailPage({
                   <TableCell className="text-right">
                     {item.discount_amount > 0
                       ? `-${formatCurrency(item.discount_amount)}`
-                      : "—"}
+                      : "\u2014"}
                   </TableCell>
                   <TableCell className="text-right font-medium">
                     {formatCurrency(item.line_total)}

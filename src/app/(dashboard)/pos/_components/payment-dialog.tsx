@@ -6,6 +6,8 @@ import { createSale } from "@/lib/actions/sales";
 import { generateReceiptPDF } from "@/lib/utils/receipt-pdf";
 import { STORE_CONFIG } from "@/lib/utils/constants";
 import { formatCurrency, formatDateTime } from "@/lib/utils/format";
+import { useTranslations } from "@/lib/i18n/use-translations";
+import { interpolate } from "@/lib/i18n/locales";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,6 +31,8 @@ export function PaymentDialog({
   onOpenChange,
   cashierName,
 }: PaymentDialogProps) {
+  const t = useTranslations("payment");
+  const tCommon = useTranslations("common");
   const items = useCartStore((s) => s.items);
   const customerId = useCartStore((s) => s.customerId);
   const customerName = useCartStore((s) => s.customerName);
@@ -84,7 +88,7 @@ export function PaymentDialog({
           notes: notes || undefined,
         });
 
-        toast.success(`Sale #${result.saleNumber} completed!`);
+        toast.success(interpolate(t.saleCompleted, { number: result.saleNumber }));
 
         // Generate and open receipt PDF
         try {
@@ -125,7 +129,7 @@ export function PaymentDialog({
             });
           }
         } catch (pdfError) {
-          console.error("Receipt PDF error:", pdfError);
+          console.error(t.receiptError, pdfError);
         }
 
         clearCart();
@@ -134,7 +138,7 @@ export function PaymentDialog({
         setReference("");
       } catch (error) {
         toast.error(
-          error instanceof Error ? error.message : "Sale failed"
+          error instanceof Error ? error.message : t.saleFailed
         );
       }
     });
@@ -144,11 +148,11 @@ export function PaymentDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Payment</DialogTitle>
+          <DialogTitle>{t.title}</DialogTitle>
         </DialogHeader>
 
         <div className="text-center py-4">
-          <p className="text-sm text-muted-foreground">Amount Due</p>
+          <p className="text-sm text-muted-foreground">{t.amountDue}</p>
           <p className="text-3xl font-bold">{formatCurrency(total)}</p>
         </div>
 
@@ -157,14 +161,14 @@ export function PaymentDialog({
           onValueChange={(v) => setPaymentMethod(v as "cash" | "card" | "transfer")}
         >
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="cash">Cash</TabsTrigger>
-            <TabsTrigger value="card">Card</TabsTrigger>
-            <TabsTrigger value="transfer">Transfer</TabsTrigger>
+            <TabsTrigger value="cash">{t.cash}</TabsTrigger>
+            <TabsTrigger value="card">{t.card}</TabsTrigger>
+            <TabsTrigger value="transfer">{t.transfer}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="cash" className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="amount_tendered">Amount Tendered</Label>
+              <Label htmlFor="amount_tendered">{t.amountTendered}</Label>
               <Input
                 id="amount_tendered"
                 type="number"
@@ -178,7 +182,7 @@ export function PaymentDialog({
             </div>
             {amountPaid >= total && (
               <div className="rounded-md bg-green-50 p-3 text-center">
-                <p className="text-sm text-muted-foreground">Change</p>
+                <p className="text-sm text-muted-foreground">{t.change}</p>
                 <p className="text-2xl font-bold text-green-600">
                   {formatCurrency(changeGiven)}
                 </p>
@@ -188,31 +192,31 @@ export function PaymentDialog({
 
           <TabsContent value="card" className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="card_ref">Reference (optional)</Label>
+              <Label htmlFor="card_ref">{t.referenceOptional}</Label>
               <Input
                 id="card_ref"
                 value={reference}
                 onChange={(e) => setReference(e.target.value)}
-                placeholder="Transaction reference"
+                placeholder={t.transactionReference}
               />
             </div>
             <p className="text-sm text-muted-foreground text-center">
-              Amount: {formatCurrency(total)}
+              {interpolate(t.amount, { amount: formatCurrency(total) })}
             </p>
           </TabsContent>
 
           <TabsContent value="transfer" className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="transfer_ref">Reference (optional)</Label>
+              <Label htmlFor="transfer_ref">{t.referenceOptional}</Label>
               <Input
                 id="transfer_ref"
                 value={reference}
                 onChange={(e) => setReference(e.target.value)}
-                placeholder="Transfer reference"
+                placeholder={t.transferReference}
               />
             </div>
             <p className="text-sm text-muted-foreground text-center">
-              Amount: {formatCurrency(total)}
+              {interpolate(t.amount, { amount: formatCurrency(total) })}
             </p>
           </TabsContent>
         </Tabs>
@@ -224,8 +228,8 @@ export function PaymentDialog({
           onClick={handleConfirm}
         >
           {isPending
-            ? "Processing..."
-            : `Confirm ${formatCurrency(total)}`}
+            ? tCommon.processing
+            : interpolate(t.confirm, { amount: formatCurrency(total) })}
         </Button>
       </DialogContent>
     </Dialog>
