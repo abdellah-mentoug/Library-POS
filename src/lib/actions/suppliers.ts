@@ -6,19 +6,17 @@ import { createClient } from "@/lib/supabase/server";
 import { SupplierSchema, isValidUuid } from "@/lib/utils/validation";
 import { revalidatePath } from "next/cache";
 
-export async function getSuppliers() {
-  return authAction(async () => {
-    const supabase = await createClient();
-    const { data, error } = await supabase
-      .from("suppliers")
-      .select("*")
-      .eq("is_active", true)
-      .order("name", { ascending: true });
+export const getSuppliers = authAction(async () => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("suppliers")
+    .select("*")
+    .eq("is_active", true)
+    .order("name", { ascending: true });
 
-    if (error) throw new Error(error.message);
-    return data;
-  });
-}
+  if (error) throw new Error(error.message);
+  return data;
+});
 
 export async function getSupplier(id: string) {
   if (!isValidUuid(id)) throw new Error("Invalid supplier ID");

@@ -9,5 +9,9 @@ export function useTranslations<K extends keyof Messages>(
   namespace: K
 ): Messages[K] {
   const { locale } = useLocale();
-  return messages[locale][namespace];
+
+  // fallback للإنجليزية إذا locale ما موجودش
+  const localeMessages = messages[locale] || messages.en;
+
+  return localeMessages[namespace];
 }

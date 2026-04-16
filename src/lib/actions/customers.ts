@@ -6,33 +6,30 @@ import { createClient } from "@/lib/supabase/server";
 import { CustomerSchema, isValidUuid } from "@/lib/utils/validation";
 import { revalidatePath } from "next/cache";
 
-export async function getCustomers() {
-  return authAction(async () => {
-    const supabase = await createClient();
-    const { data, error } = await supabase
-      .from("customers")
-      .select("*")
-      .order("name", { ascending: true });
+export const getCustomers = authAction(async () => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("customers")
+    .select("*")
+    .order("name", { ascending: true });
 
-    if (error) throw new Error(error.message);
-    return data;
-  });
-}
+  if (error) throw new Error(error.message);
+  return data;
+});
 
-export async function getCustomer(id: string) {
+export const getCustomer = authAction(async (_user, id: string) => {
   if (!isValidUuid(id)) throw new Error("Invalid customer ID");
-  return authAction(async () => {
-    const supabase = await createClient();
-    const { data, error } = await supabase
-      .from("customers")
-      .select("*")
-      .eq("id", id)
-      .single();
 
-    if (error) throw new Error(error.message);
-    return data;
-  });
-}
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("customers")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
+});
 
 export async function createCustomer(formData: FormData) {
   return authAction(async () => {
@@ -62,7 +59,7 @@ export async function createCustomer(formData: FormData) {
 
     revalidatePath("/customers");
     return { success: true };
-  });
+  })();
 }
 
 export async function updateCustomer(id: string, formData: FormData) {
@@ -98,7 +95,7 @@ export async function updateCustomer(id: string, formData: FormData) {
     revalidatePath("/customers");
     revalidatePath(`/customers/${id}`);
     return { success: true };
-  });
+  })();
 }
 
 export async function deleteCustomer(id: string) {
@@ -114,35 +111,34 @@ export async function deleteCustomer(id: string) {
 
     revalidatePath("/customers");
     return { success: true };
-  });
+  })();
 }
 
-export async function getCustomerPurchaseHistory(customerId: string) {
+export const getCustomerPurchaseHistory = authAction(async (_user, customerId: string) => {
   if (!isValidUuid(customerId)) throw new Error("Invalid customer ID");
-  return authAction(async () => {
-    const supabase = await createClient();
 
-    // Get sales for this customer
-    const { data: sales, error: salesError } = await supabase
-      .from("sales")
-      .select(
-        `id, sale_number, total, payment_method, status, created_at,
-         sale_items(id, product_name, quantity, unit_price, line_total)`
-      )
-      .eq("customer_id", customerId)
-      .order("created_at", { ascending: false });
+  const supabase = await createClient();
 
-    if (salesError) throw new Error(salesError.message);
+  // Get sales for this customer
+  const { data: sales, error: salesError } = await supabase
+    .from("sales")
+    .select(
+      `id, sale_number, total, payment_method, status, created_at,
+       sale_items(id, product_name, quantity, unit_price, line_total)`
+    )
+    .eq("customer_id", customerId)
+    .order("created_at", { ascending: false });
 
-    // Get print orders for this customer
-    const { data: printOrders, error: printError } = await supabase
-      .from("print_orders")
-      .select("id, order_number, service_type, total_price, status, created_at")
-      .eq("customer_id", customerId)
-      .order("created_at", { ascending: false });
+  if (salesError) throw new Error(salesError.message);
 
-    if (printError) throw new Error(printError.message);
+  // Get print orders for this customer
+  const { data: printOrders, error: printError } = await supabase
+    .from("print_orders")
+    .select("id, order_number, service_type, total_price, status, created_at")
+    .eq("customer_id", customerId)
+    .order("created_at", { ascending: false });
 
-    return { sales: sales || [], printOrders: printOrders || [] };
-  });
-}
+  if (printError) throw new Error(printError.message);
+
+  return { sales: sales || [], printOrders: printOrders || [] };
+});

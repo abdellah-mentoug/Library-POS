@@ -23,15 +23,18 @@ interface Customer {
   email: string | null;
   phone: string | null;
   address: string | null;
+  client_type: string;
+  notes: string | null;
   created_at: string;
 }
 
 interface CustomerTableProps {
   customers: Customer[];
-  role: string;
+  role?: string;
+  onEdit?: (customer: Customer) => void;
 }
 
-export function CustomerTable({ customers, role }: CustomerTableProps) {
+export function CustomerTable({ customers, role, onEdit }: CustomerTableProps) {
   const t = useTranslations("customers");
   const tc = useTranslations("common");
   const isAdmin = role === "admin";
@@ -107,12 +110,19 @@ export function CustomerTable({ customers, role }: CustomerTableProps) {
                   {tc.view}
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={`/customers/${customer.id}/edit`}>
+              {onEdit ? (
+                <DropdownMenuItem onClick={() => onEdit(customer)}>
                   <Pencil className="mr-2 h-4 w-4" />
                   {tc.edit}
-                </Link>
-              </DropdownMenuItem>
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem asChild>
+                  <Link href={`/customers/${customer.id}/edit`}>
+                    <Pencil className="mr-2 h-4 w-4" />
+                    {tc.edit}
+                  </Link>
+                </DropdownMenuItem>
+              )}
               {isAdmin && (
                 <DropdownMenuItem
                   className="text-destructive"

@@ -78,7 +78,7 @@ export async function getUsers() {
       ...p,
       email: emailMap.get(p.id) || "",
     }));
-  });
+  })();
 }
 
 export async function updateProfile(
@@ -96,5 +96,5 @@ export async function updateProfile(
 
     revalidatePath("/settings/users");
     return { success: true };
-  });
+  })();
 }

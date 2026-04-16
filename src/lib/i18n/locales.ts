@@ -1,7 +1,7 @@
-export type Locale = "en" | "fr";
+export type Locale = "en" | "fr" | "ar";
 
 export const DEFAULT_LOCALE: Locale = "en";
-export const LOCALES: Locale[] = ["en", "fr"];
+export const LOCALES: Locale[] = ["en", "fr", "ar"];
 
 /** Replace {param} placeholders in a template string */
 export function interpolate(

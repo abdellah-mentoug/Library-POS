@@ -1,144 +1,156 @@
-"use client";
+// src/components/layout/sidebar.tsx
+// REPLACE the existing file entirely.
+// Adds: stock_operator role, new nav groups (Stock, Devis, Credits)
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import type { UserRole } from "@/lib/auth";
-import { useTranslations } from "@/lib/i18n/use-translations";
-import { cn } from "@/lib/utils";
-import { STORE_CONFIG } from "@/lib/utils/constants";
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
 import {
-  LayoutDashboard,
-  ShoppingCart,
-  Receipt,
-  Package,
-  FolderTree,
-  Printer,
-  Users,
-  Truck,
-  ClipboardList,
-  BarChart3,
-  Settings,
-  BookOpen,
-} from "lucide-react";
-import type { Messages } from "@/lib/i18n/translations/en";
+  LayoutDashboard, ShoppingCart, Package, Tag, Receipt, Users, Truck,
+  ShoppingBag, Printer, BarChart3, Settings, Package2, History,
+  FileText, BookOpen, CreditCard, ClipboardList, PlusCircle, MinusCircle,
+} from 'lucide-react';
 
-type NavKey = keyof Messages["nav"];
-
-interface SidebarProps {
-  role: UserRole;
-}
+type AllowedRole = 'admin' | 'employee' | 'stock_operator';
 
 interface NavItem {
-  labelKey: NavKey;
   href: string;
+  label: string;
   icon: React.ElementType;
-  adminOnly?: boolean;
+  roles: AllowedRole[];
 }
 
-interface NavSection {
-  titleKey: NavKey;
+interface NavGroup {
+  group: string;
   items: NavItem[];
 }
 
-const navSections: NavSection[] = [
+const NAV: NavGroup[] = [
   {
-    titleKey: "main",
+    group: 'Principal',
     items: [
-      { labelKey: "dashboard", href: "/", icon: LayoutDashboard },
-      { labelKey: "pos", href: "/pos", icon: ShoppingCart },
-      { labelKey: "sales", href: "/sales", icon: Receipt },
+      { href: '/dashboard',  label: 'Tableau de bord', icon: LayoutDashboard, roles: ['admin','employee','stock_operator'] },
+      { href: '/pos',        label: 'Caisse / POS',    icon: ShoppingCart,    roles: ['admin','employee','stock_operator'] },
     ],
   },
   {
-    titleKey: "inventory",
+    group: 'Catalogue',
     items: [
-      { labelKey: "products", href: "/products", icon: Package },
-      { labelKey: "categories", href: "/categories", icon: FolderTree },
+      { href: '/products',   label: 'Produits',         icon: Package,  roles: ['admin','employee'] },
+      { href: '/categories', label: 'Catégories',       icon: Tag,      roles: ['admin','employee'] },
     ],
   },
   {
-    titleKey: "services",
+    group: 'Stock',
     items: [
-      { labelKey: "printOrders", href: "/print-orders", icon: Printer },
+      { href: '/stock',          label: 'Vue stock',      icon: Package2,      roles: ['admin','stock_operator'] },
+      { href: '/stock/entry',    label: 'Entrée stock',   icon: PlusCircle,    roles: ['admin','stock_operator'] },
+      { href: '/stock/exit',     label: 'Sortie stock',   icon: MinusCircle,   roles: ['admin','stock_operator'] },
+      { href: '/stock/stocktake',label: 'Inventaire',     icon: ClipboardList, roles: ['admin','stock_operator'] },
+      { href: '/stock/history',  label: 'Historique',     icon: History,       roles: ['admin','stock_operator'] },
     ],
   },
   {
-    titleKey: "people",
+    group: 'Ventes',
     items: [
-      { labelKey: "customers", href: "/customers", icon: Users },
-      { labelKey: "suppliers", href: "/suppliers", icon: Truck, adminOnly: true },
+      { href: '/sales',        label: 'Historique ventes', icon: Receipt,       roles: ['admin','employee'] },
+      { href: '/print-orders', label: 'Impression',        icon: Printer,       roles: ['admin','employee'] },
     ],
   },
   {
-    titleKey: "purchasing",
+    group: 'Documents',
     items: [
-      {
-        labelKey: "purchases",
-        href: "/purchases",
-        icon: ClipboardList,
-        adminOnly: true,
-      },
+      { href: '/devis',          label: 'Devis',            icon: FileText,  roles: ['admin'] },
+      { href: '/devis/bdc',      label: 'Bons de commande', icon: ShoppingBag, roles: ['admin'] },
+      { href: '/devis/factures', label: 'Factures',         icon: BookOpen,  roles: ['admin'] },
     ],
   },
   {
-    titleKey: "analytics",
-    items: [{ labelKey: "reports", href: "/reports", icon: BarChart3 }],
+    group: 'Clients & Crédit',
+    items: [
+      { href: '/customers', label: 'Clients',         icon: Users,       roles: ['admin','employee'] },
+      { href: '/credits',   label: 'Comptes crédit',  icon: CreditCard,  roles: ['admin'] },
+    ],
   },
   {
-    titleKey: "system",
+    group: 'Fournisseurs',
     items: [
-      { labelKey: "settings", href: "/settings", icon: Settings, adminOnly: true },
+      { href: '/suppliers', label: 'Fournisseurs',   icon: Truck,       roles: ['admin'] },
+      { href: '/purchases', label: 'Achats / PO',    icon: ShoppingBag, roles: ['admin'] },
+    ],
+  },
+  {
+    group: 'Rapports',
+    items: [
+      { href: '/reports', label: 'Rapports', icon: BarChart3, roles: ['admin'] },
+    ],
+  },
+  {
+    group: 'Système',
+    items: [
+      { href: '/settings', label: 'Paramètres', icon: Settings, roles: ['admin'] },
     ],
   },
 ];
 
-export function Sidebar({ role }: SidebarProps) {
+interface SidebarProps {
+  userRole: string;
+  storeName?: string;
+}
+
+export function Sidebar({ userRole, storeName = 'Library POS' }: SidebarProps) {
   const pathname = usePathname();
-  const t = useTranslations("nav");
 
   function isActive(href: string) {
-    if (href === "/") return pathname === "/";
+    if (href === '/dashboard') return pathname === '/dashboard';
     return pathname.startsWith(href);
   }
 
   return (
-    <aside className="flex h-screen w-64 flex-col border-r bg-card">
-      <div className="flex h-16 items-center gap-2 border-b px-6">
-        <BookOpen className="h-6 w-6 text-primary" />
-        <span className="text-lg font-semibold">{STORE_CONFIG.name}</span>
+    <aside className="flex flex-col w-60 min-h-screen bg-card border-e border-border">
+      {/* Logo */}
+      <div className="px-4 py-5 border-b border-border">
+        <p className="font-bold text-base truncate">{storeName}</p>
+        <p className="text-xs text-muted-foreground mt-0.5 capitalize">{userRole}</p>
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-3 py-4">
-        {navSections.map((section) => {
-          const visibleItems = section.items.filter(
-            (item) => !item.adminOnly || role === "admin"
+      {/* Nav */}
+      <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-4">
+        {NAV.map((group) => {
+          const visibleItems = group.items.filter((item) =>
+            item.roles.includes(userRole as AllowedRole)
           );
           if (visibleItems.length === 0) return null;
 
           return (
-            <div key={section.titleKey} className="mb-6">
-              <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {t[section.titleKey]}
+            <div key={group.group}>
+              <p className="px-2 mb-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70">
+                {group.group}
               </p>
-              {visibleItems.map((item) => {
-                const Icon = item.icon;
-                const active = isActive(item.href);
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                      active
-                        ? "bg-primary/10 text-primary"
-                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                    )}
-                  >
-                    <Icon className="h-4 w-4" />
-                    {t[item.labelKey]}
-                  </Link>
-                );
-              })}
+              <ul className="space-y-0.5">
+                {visibleItems.map((item) => {
+                  const Icon = item.icon;
+                  const active = isActive(item.href);
+                  return (
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          'flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-sm transition-colors',
+                          active
+                            ? 'bg-primary text-primary-foreground font-medium'
+                            : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                        )}
+                      >
+                        <Icon className="h-4 w-4 shrink-0" />
+                        <span className="truncate">{item.label}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
           );
         })}

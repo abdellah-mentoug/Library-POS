@@ -1,14 +1,18 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { createCustomer, updateCustomer } from "@/lib/actions/customers";
 import { CustomerSchema } from "@/lib/utils/validation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useTranslations } from "@/lib/i18n/use-translations";
 
@@ -22,14 +26,15 @@ interface Customer {
 }
 
 interface CustomerFormProps {
-  mode: "create" | "edit";
-  customer?: Customer;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  customer?: Customer | null;
 }
 
-export function CustomerForm({ mode, customer }: CustomerFormProps) {
-  const router = useRouter();
+export function CustomerForm({ open, onOpenChange, customer }: CustomerFormProps) {
   const t = useTranslations("customers");
   const tc = useTranslations("common");
+  const mode = customer ? "edit" : "create";
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -70,13 +75,13 @@ export function CustomerForm({ mode, customer }: CustomerFormProps) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          {mode === "create" ? t.newCustomer : t.editCustomer}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>
+            {mode === "create" ? t.newCustomer : t.editCustomer}
+          </DialogTitle>
+        </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
@@ -149,13 +154,13 @@ export function CustomerForm({ mode, customer }: CustomerFormProps) {
             <Button
               type="button"
               variant="outline"
-              onClick={() => router.push("/customers")}
+              onClick={() => onOpenChange(false)}
             >
               {tc.cancel}
             </Button>
           </div>
         </form>
-      </CardContent>
-    </Card>
+      </DialogContent>
+    </Dialog>
   );
 }

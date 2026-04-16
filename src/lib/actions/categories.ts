@@ -6,19 +6,17 @@ import { createClient } from "@/lib/supabase/server";
 import { CategorySchema, isValidUuid } from "@/lib/utils/validation";
 import { revalidatePath } from "next/cache";
 
-export async function getCategories() {
-  return authAction(async () => {
-    const supabase = await createClient();
-    const { data, error } = await supabase
-      .from("categories")
-      .select("*")
-      .order("sort_order", { ascending: true })
-      .order("name", { ascending: true });
+export const getCategories = authAction(async () => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("categories")
+    .select("*")
+    .order("sort_order", { ascending: true })
+    .order("name", { ascending: true });
 
-    if (error) throw new Error(error.message);
-    return data;
-  });
-}
+  if (error) throw new Error(error.message);
+  return data;
+});
 
 export async function createCategory(formData: FormData) {
   return adminAction(async () => {

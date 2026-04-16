@@ -13,23 +13,17 @@ const validReasons = [
   "damaged",
 ] as const;
 
-export async function adjustStock(
-  productId: string,
-  quantityChange: number,
-  reason: string,
-  notes?: string
-) {
+export const adjustStock = adminAction(async (user, productId: string, quantityChange: number, reason: string, notes?: string) => {
   if (!isValidUuid(productId)) return { error: "Invalid product ID" };
-  return adminAction(async (user) => {
-    if (!validReasons.includes(reason as (typeof validReasons)[number])) {
-      return { error: "Invalid reason" };
-    }
+  if (!validReasons.includes(reason as (typeof validReasons)[number])) {
+    return { error: "Invalid reason" };
+  }
 
-    if (quantityChange === 0) {
-      return { error: "Quantity change cannot be zero" };
-    }
+  if (quantityChange === 0) {
+    return { error: "Quantity change cannot be zero" };
+  }
 
-    const supabase = createAdminClient();
+  const supabase = createAdminClient();
 
     // Update product stock
     const { data: product, error: fetchError } = await supabase
@@ -68,8 +62,7 @@ export async function adjustStock(
     revalidatePath("/products");
     revalidatePath(`/products/${productId}`);
     return { success: true };
-  });
-}
+});
 
 export async function getStockMovements(productId: string) {
   if (!isValidUuid(productId)) throw new Error("Invalid product ID");
@@ -81,6 +74,28 @@ export async function getStockMovements(productId: string) {
     .eq("product_id", productId)
     .order("created_at", { ascending: false })
     .limit(50);
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function getAllStockMovements() {
+  const supabase = (await import("@/lib/supabase/server")).createClient;
+  const client = await supabase();
+  const { data, error } = await client
+    .from("stock_movements")
+    .select(`
+      *,
+      products (
+        name,
+        barcode
+      ),
+      profiles (
+        full_name
+      )
+    `)
+    .order("created_at", { ascending: false })
+    .limit(100);
 
   if (error) throw new Error(error.message);
   return data;

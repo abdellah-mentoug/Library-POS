@@ -123,4 +123,20 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Arabic Language Support */
+  html[lang="ar"] {
+    font-family: var(--font-cairo, sans-serif);
+  }
+
+  html[lang="ar"] body {
+    direction: rtl;
+    text-align: right;
+  }
+
+  html[lang="ar"] input,
+  html[lang="ar"] textarea {
+    direction: rtl;
+    text-align: right;
+  }
 }

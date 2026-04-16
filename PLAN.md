@@ -1,103 +1,263 @@
-# Execution Plan -- Library POS System
+# Execution Plan — Library-POS Extensions
 
-Generated from: research.md
-Date: 2026-02-28
-
----
+Generated from: research.md and user requirements
+Date: 2026-04-06
 
 ## Overview
-
-A point-of-sale and print-order management system for a Moroccan bookshop and print shop in Settat, Morocco. The shop sells school textbooks (Arabic, French, English) and provides printing/copying/binding services. The system is designed for 1 admin (shop owner) plus 1-2 employees, running in a desktop browser.
-
-### Tech Stack
-
-- **Framework:** Next.js 15 (App Router, TypeScript)
-- **Database & Auth:** Supabase (PostgreSQL, Auth, Storage)
-- **Styling:** Tailwind CSS v4
-- **Component Library:** shadcn/ui
-- **State Management:** Zustand (POS cart)
-- **Data Tables:** TanStack React Table v8
-- **Charts:** Recharts
-- **PDF Generation:** jsPDF (receipts and reports, client-side only)
-- **Barcode:** JsBarcode (label generation), USB keyboard-wedge scanner hook
-- **Validation:** Zod
-- **Dates:** date-fns
-
-### Key Architectural Decisions
-
-1. All database writes go through Next.js Server Actions using the Supabase service role key (bypasses RLS). Read-side RLS enforces role visibility.
-2. POS cart state lives in a Zustand store (client-side memory). No persistence across page reloads for MVP.
-3. Stock decrements are handled by a PostgreSQL trigger on `sale_items` INSERT, not by application code. This is atomic and race-condition-free.
-4. PDF generation (receipts, reports) runs client-side only via jsPDF. Never attempt to run jsPDF in Server Components or Server Actions.
-5. The middleware refreshes auth tokens on every request and redirects unauthenticated users to `/login`.
-6. Currency is MAD (Moroccan Dirham). All prices use `NUMERIC(10,2)`.
-7. `selling_price` is nullable -- the owner sets retail prices manually after inventory is loaded.
-8. `barcode` is `VARCHAR(13)` nullable -- the owner scans ISBN-13 barcodes with a USB scanner during setup.
-
----
+- Brief project description: Extend the existing Library-POS Next.js application with Arabic support, full supplier/client management, enhanced stock management, quote/devis management, history module, credit module, receipt printing updates, employee access control, and category management enhancements.
+- Tech stack summary: Next.js 15, Supabase, Tailwind CSS, shadcn/ui (existing)
+- Key architectural decisions: Build on existing schema, add new tables with proper RLS, integrate with current dashboard structure, maintain consistency.
 
 ## Prerequisites & Environment Setup
+- Required tools: Existing Node.js, Supabase project already set up
+- Environment variables: Existing .env.local with Supabase keys
+- Initial project scaffolding: Already done, extend existing app
 
-### Required Tools
-
-| Tool             | Version     | Purpose                           |
-| ---------------- | ----------- | --------------------------------- |
-| Node.js          | 20+ LTS     | Runtime                           |
-| npm              | 10+         | Package manager (ships with Node) |
-| Git              | Any recent  | Version control                   |
-| Supabase account | Free tier   | Database, Auth, Storage           |
-| Web browser      | Chrome/Edge | Development and production use    |
-
-### Supabase Project Setup (Manual -- before any code)
-
-1. Go to https://supabase.com and create a new project.
-2. Note the project URL and keys from Settings > API:
-   - `NEXT_PUBLIC_SUPABASE_URL` (Project URL)
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` (anon / publishable key)
-   - `SUPABASE_SERVICE_ROLE_KEY` (service_role key -- NEVER expose to client)
-3. In the SQL Editor, enable the trigram extension: `CREATE EXTENSION IF NOT EXISTS pg_trgm;`
-
-### Environment Variables
-
-Create `.env.local` in the project root with these variables:
-
-```
-NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
-```
-
-Add `.env.local` to `.gitignore` (Next.js does this by default).
-
----
-
-## Phase 0: Project Bootstrap
-
+## Phase 1: Database Schema Extensions
 ### Objective
-
-Scaffold a clean Next.js 15 app with all dependencies installed, Tailwind CSS configured, shadcn/ui initialized, and the dev server running cleanly with zero errors before writing any feature code.
+Add new tables, enums, and extend existing tables for the new features: translations, clients, quotes, invoices, history_records, credits, employee_roles. Update RLS policies.
 
 ### Steps
+1. Create new enums: user_role extended with 'seller_stock_operator', credit_type ('school', 'library'), quote_status ('draft', 'sent', 'accepted', 'rejected'), invoice_status ('draft', 'sent', 'paid', 'overdue')
+2. Create translations table for Arabic support: id, key, language, value
+3. Extend customers table with client_type ('school', 'library', 'individual')
+4. Create quotes table: id, quote_number, customer_id, items (jsonb), subtotal, tax_total, discount, total, status, created_by, created_at, updated_at
+5. Create invoices table: id, invoice_number, quote_id, customer_id, items, subtotal, tax_total, discount, total, status, due_date, paid_at, created_by
+6. Create history_records table: id, action_type, entity_type, entity_id, description, user_id, created_at
+7. Create credits table: id, customer_id, credit_type, amount, balance, description, created_by, created_at
+8. Extend profiles table with role 'seller_stock_operator'
+9. Add RLS policies for all new tables
+10. Create database views for reporting on new entities
 
-#### 0.1 Create the Next.js project
+### Verification
+- Run migrations in Supabase SQL editor
+- Verify tables created with correct columns and types
+- Test RLS policies with different user roles
 
-Run from the project root directory (`C:\Users\Mr\Desktop\Library`):
+### Dependencies
+- None, base schema exists
 
-```bash
-npx create-next-app@15 . --typescript --tailwind --eslint --app --src-dir --import-alias "@/*" --turbopack
-```
+## Phase 2: Arabic Support Implementation
+### Objective
+Add full Arabic language support using i18n.
 
-If the directory is not empty (it contains `research.md`, `seed-data/`, `supabase/`, etc.), the scaffold tool may warn. Accept the prompt to proceed -- it will not overwrite existing files.
+### Steps
+1. Install next-intl or react-i18next
+2. Create translation files for Arabic and existing languages
+3. Update layout with language switcher (already exists, enhance)
+4. Wrap app with i18n provider
+5. Translate all UI strings to Arabic
+6. Update date/number formatting for Arabic locale
 
-If the scaffold refuses because the directory is not empty, create the app in a temp directory and move files:
+### Verification
+- Switch language in UI, all text displays in Arabic
+- RTL layout works correctly
 
-```bash
-npx create-next-app@15 temp-app --typescript --tailwind --eslint --app --src-dir --import-alias "@/*" --turbopack
-```
+### Dependencies
+- Phase 1 (translations table)
 
-Then move all generated files and folders (except `.git` if present) from `temp-app/` into the project root and delete `temp-app/`.
+## Phase 3: Supplier Management Module
+### Objective
+Enhance existing supplier CRUD with full management UI.
 
-#### 0.2 Install core dependencies
+### Steps
+1. Create supplier list page with search/filter
+2. Create supplier form component (create/edit)
+3. Add supplier detail page
+4. Integrate with unified management area
+5. Add supplier performance reports
+
+### Verification
+- CRUD operations work for suppliers
+- Data displays correctly in unified area
+
+### Dependencies
+- Existing suppliers table
+
+## Phase 4: Client Management Module
+### Objective
+Extend customers to clients with separate data, full CRUD.
+
+### Steps
+1. Update customers table schema (add client_type)
+2. Create client list page separate from customers
+3. Create client form with client-specific fields
+4. Add client detail page with history
+5. Integrate with unified management area
+
+### Verification
+- Clients and customers are separate but accessible
+- CRUD works for clients
+
+### Dependencies
+- Phase 1 (client_type extension)
+
+## Phase 5: Stock Management Module Enhancement
+### Objective
+Enhance stock tracking, ensure all actions recorded.
+
+### Steps
+1. Create stock management dashboard
+2. Add stock entry/exit forms
+3. Implement stock adjustments
+4. Add stock transfer functionality
+5. Ensure all stock changes recorded in stock_movements
+
+### Verification
+- All stock actions appear in stock_movements
+- Stock quantities update correctly
+
+### Dependencies
+- Existing stock_movements table
+
+## Phase 6: Quote/Devis Management
+### Objective
+Add quote creation, bon de commande, facture conversion.
+
+### Steps
+1. Create quote list page
+2. Create quote form (create/edit)
+3. Add convert to bon de commande
+4. Add convert to facture/invoice
+5. Create invoice management
+
+### Verification
+- Create quotes, convert to orders/invoices
+- Document generation works
+
+### Dependencies
+- Phase 1 (quotes, invoices tables)
+
+## Phase 7: History Module
+### Objective
+Track every stock-related action in history.
+
+### Steps
+1. Create history table triggers for stock_movements
+2. Create history list page with filters
+3. Display history for each product
+4. Add search and export
+
+### Verification
+- Every stock action appears in history
+- History is searchable and filterable
+
+### Dependencies
+- Phase 1 (history_records table), Phase 5
+
+## Phase 8: Credit Module
+### Objective
+Support credits for écoles and bibliothèques separately.
+
+### Steps
+1. Create credit management UI
+2. Add credit assignment forms
+3. Separate flows for school and library credits
+4. Add credit tracking and reports
+
+### Verification
+- Credits separate for schools and libraries
+- Credit flows work correctly
+
+### Dependencies
+- Phase 1 (credits table)
+
+## Phase 9: Receipt Printing Updates
+### Objective
+Update printed receipts to include remise/discount.
+
+### Steps
+1. Update receipt PDF generation to include discount lines
+2. Test printing with discounts
+3. Ensure correct display
+
+### Verification
+- Receipts show discounts correctly
+- Printing works
+
+### Dependencies
+- Existing receipt generation
+
+## Phase 10: Employee Access Control
+### Objective
+Add seller/stock operator role with limited access.
+
+### Steps
+1. Extend user_role enum with 'seller_stock_operator'
+2. Update RLS policies for limited access
+3. Update UI to hide admin features for this role
+4. Add role assignment in user management
+
+### Verification
+- Seller/stock operator can only sell and manage stock
+- No access to other admin features
+
+### Dependencies
+- Phase 1 (role extension)
+
+## Phase 11: Category Management Enhancements
+### Objective
+Allow free category creation and item assignment.
+
+### Steps
+1. Enhance category CRUD UI
+2. Add drag-drop or multi-select for assigning products
+3. Allow unlimited categories
+4. Update category tree display
+
+### Verification
+- Create categories freely
+- Assign items to categories
+- Categories store any items
+
+### Dependencies
+- Existing categories table
+
+## Phase 12: UI Integration and Dashboard Updates
+### Objective
+Integrate all new modules into dashboard, ensure consistency.
+
+### Steps
+1. Add navigation links for new modules
+2. Update sidebar with new sections
+3. Ensure responsive design
+4. Add loading states and error handling
+
+### Verification
+- All modules accessible from dashboard
+- UI consistent with existing design
+
+### Dependencies
+- All previous phases
+
+## Phase 13: Testing and Validation
+### Objective
+Test all features, validate data integrity.
+
+### Steps
+1. End-to-end testing of each module
+2. Validate database constraints
+3. Test role-based access
+4. Performance testing
+
+### Verification
+- All features work as specified
+- No data integrity issues
+
+### Dependencies
+- All phases
+
+## Final Verification Checklist
+- Arabic support fully implemented
+- Supplier and client CRUD complete
+- Stock management tracks all actions
+- Quotes convert to orders/invoices
+- History shows every stock operation
+- Credits separate for schools and libraries
+- Receipts include discounts
+- Employee roles restrict access appropriately
+- Categories freely creatable and assignable
+- All modules integrated into dashboard
 
 ```bash
 npm install @supabase/supabase-js @supabase/ssr

@@ -1,8 +1,10 @@
-import { en } from "./en";
-import { fr } from "./fr";
-import type { Messages } from "./en";
-import type { Locale } from "../locales";
+import { en } from './en';
+import { fr } from './fr';
+import { ar } from './ar';
+import type { Locale } from '../locales';
 
-export type { Messages };
+export { en, fr, ar };
 
-export const messages: Record<Locale, Messages> = { en, fr };
+export const messages: Record<Locale, typeof en> = { en, fr, ar };
+
+export type TranslationKeys = typeof en;

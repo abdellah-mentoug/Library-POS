@@ -16,7 +16,7 @@ export async function getPurchaseOrders() {
 
     if (error) throw new Error(error.message);
     return data;
-  });
+  })();
 }
 
 export async function getPurchaseOrder(id: string) {
@@ -37,7 +37,7 @@ export async function getPurchaseOrder(id: string) {
 
     if (error) throw new Error(error.message);
     return data;
-  });
+  })();
 }
 
 interface CreatePOInput {
@@ -111,7 +111,7 @@ export async function createPurchaseOrder(input: CreatePOInput) {
 
     revalidatePath("/purchases");
     return { success: true, id: po.id, poNumber: po.po_number };
-  });
+  })();
 }
 
 export async function updatePurchaseOrderStatus(
@@ -137,7 +137,7 @@ export async function updatePurchaseOrderStatus(
     revalidatePath("/purchases");
     revalidatePath(`/purchases/${id}`);
     return { success: true };
-  });
+  })();
 }
 
 interface ReceiveItem {
@@ -260,5 +260,5 @@ export async function receivePurchaseOrder(
     revalidatePath(`/purchases/${poId}`);
     revalidatePath("/products");
     return { success: true, itemsReceived: itemsToProcess.length };
-  });
+  })();
 }

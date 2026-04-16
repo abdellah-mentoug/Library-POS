@@ -1,6 +1,6 @@
 "use server";
 
-import { authAction } from "@/lib/actions/guard";
+import { authAction, requireAnyStaff } from "@/lib/actions/guard";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { isValidUuid } from "@/lib/utils/validation";
@@ -32,23 +32,21 @@ interface SaleInput {
   notes?: string;
 }
 
-export async function getSales() {
-  return authAction(async () => {
-    const supabase = await createClient();
-    const { data, error } = await supabase
-      .from("sales")
-      .select(
-        `id, sale_number, subtotal, tax_total, discount_amount, total,
-         payment_method, status, created_at, notes,
-         customers(name),
-         profiles:cashier_id(full_name)`
-      )
-      .order("created_at", { ascending: false });
+export const getSales = authAction(async () => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("sales")
+    .select(
+      `id, sale_number, subtotal, tax_total, discount_amount, total,
+       payment_method, status, created_at, notes,
+       customers(name),
+       profiles:cashier_id(full_name)`
+    )
+    .order("created_at", { ascending: false });
 
-    if (error) throw new Error(error.message);
-    return data;
-  });
-}
+  if (error) throw new Error(error.message);
+  return data;
+});
 
 export async function getSale(id: string) {
   if (!isValidUuid(id)) throw new Error("Invalid sale ID");
@@ -68,31 +66,31 @@ export async function getSale(id: string) {
 
     if (error) throw new Error(error.message);
     return data;
-  });
+  })();
 }
 
 export async function createSale(input: SaleInput) {
-  return authAction(async (user) => {
-    const supabase = createAdminClient();
+  const user = await requireAnyStaff();
+  const supabase = createAdminClient();
 
-    const { data: sale, error: saleError } = await supabase
-      .from("sales")
-      .insert({
-        customer_id: input.customerId,
-        cashier_id: user.id,
-        subtotal: input.subtotal,
-        tax_total: input.taxTotal,
-        discount_amount: input.discountAmount,
-        discount_type: input.discountType,
-        total: input.total,
-        payment_method: input.paymentMethod,
-        payment_details: input.paymentDetails ?? null,
-        amount_paid: input.amountPaid,
-        change_given: input.changeGiven,
-        notes: input.notes ?? null,
-      })
-      .select("id, sale_number")
-      .single();
+  const { data: sale, error: saleError } = await supabase
+    .from("sales")
+    .insert({
+      customer_id: input.customerId,
+      cashier_id: user.id,
+      subtotal: input.subtotal,
+      tax_total: input.taxTotal,
+      discount_amount: input.discountAmount,
+      discount_type: input.discountType,
+      total: input.total,
+      payment_method: input.paymentMethod,
+      payment_details: input.paymentDetails ?? null,
+      amount_paid: input.amountPaid,
+      change_given: input.changeGiven,
+      notes: input.notes ?? null,
+    })
+    .select("id, sale_number")
+    .single();
 
     if (saleError) throw new Error(`Sale creation failed: ${saleError.message}`);
 
@@ -121,7 +119,6 @@ export async function createSale(input: SaleInput) {
     revalidatePath("/reports");
 
     return { saleId: sale.id, saleNumber: sale.sale_number };
-  });
 }
 
 export async function voidSale(saleId: string, reason: string) {
@@ -151,5 +148,5 @@ export async function voidSale(saleId: string, reason: string) {
     revalidatePath("/reports");
     revalidatePath("/sales");
     revalidatePath(`/sales/${saleId}`);
-  });
+  })();
 }

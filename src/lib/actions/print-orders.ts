@@ -64,7 +64,7 @@ export async function getPrintOrders(statusFilter?: PrintOrderStatus) {
 
     if (error) throw new Error(`Failed to fetch print orders: ${error.message}`);
     return data;
-  });
+  })();
 }
 
 export async function getPrintOrder(id: string) {
@@ -80,7 +80,7 @@ export async function getPrintOrder(id: string) {
 
     if (error) throw new Error(`Print order not found: ${error.message}`);
     return data;
-  });
+  })();
 }
 
 export async function createPrintOrder(input: PrintOrderInput) {
@@ -118,7 +118,7 @@ export async function createPrintOrder(input: PrintOrderInput) {
       id: data.id,
       orderNumber: formatPrintOrderNumber(data.order_number),
     };
-  });
+  })();
 }
 
 export async function updatePrintOrder(id: string, data: PrintOrderUpdateInput) {
@@ -153,7 +153,7 @@ export async function updatePrintOrder(id: string, data: PrintOrderUpdateInput) 
     revalidatePath(`/print-orders/${id}`);
 
     return { success: true };
-  });
+  })();
 }
 
 export async function updatePrintOrderStatus(
@@ -197,7 +197,7 @@ export async function updatePrintOrderStatus(
     revalidatePath(`/print-orders/${orderId}`);
 
     return { success: true };
-  });
+  })();
 }
 
 export async function convertPrintOrderToSale(
@@ -269,7 +269,7 @@ export async function convertPrintOrderToSale(
     revalidatePath("/reports");
 
     return { saleId: sale.id, saleNumber: sale.sale_number };
-  });
+  })();
 }
 
 export async function deletePrintOrderFile(orderId: string, filePath: string) {
@@ -310,5 +310,5 @@ export async function deletePrintOrderFile(orderId: string, filePath: string) {
     revalidatePath(`/print-orders/${orderId}`);
 
     return { success: true };
-  });
+  })();
 }
