@@ -15,7 +15,8 @@ export const getCategories = authAction(async (_user) => {
     .order("name", { ascending: true });
 
   if (error) {
-    throw new Error(error.message);
+    console.error("getCategories error:", error);
+    throw new Error("Failed to fetch categories");
   }
 
   return data;
@@ -41,6 +42,7 @@ export async function createCategory(data: unknown): Promise<ActionResult> {
   if (error) return { error: error.message };
 
   revalidatePath("/categories");
+  revalidatePath("/");
 
   return { success: true };
 }
@@ -65,11 +67,11 @@ export async function updateCategory(
   if (error) return { error: error.message };
 
   revalidatePath("/categories");
+  revalidatePath("/");
 
   return { success: true };
 }
 
-/* ✅ FIX: function li ناقص */
 export async function deleteCategory(id: string): Promise<ActionResult> {
   const supabase = createAdminClient();
 
@@ -81,6 +83,7 @@ export async function deleteCategory(id: string): Promise<ActionResult> {
   if (error) return { error: error.message };
 
   revalidatePath("/categories");
+  revalidatePath("/");
 
   return { success: true };
 }
