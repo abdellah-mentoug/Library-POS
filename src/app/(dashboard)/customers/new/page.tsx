@@ -9,7 +9,8 @@ export default async function NewCustomerPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-4">
       <h1 className="text-3xl font-bold">{t.addCustomer}</h1>
-      <CustomerForm mode="create" />
+
+      <CustomerForm />
     </div>
   );
 }

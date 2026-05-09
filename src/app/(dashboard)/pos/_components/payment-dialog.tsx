@@ -7,6 +7,8 @@ import { generateReceiptPDF } from "@/lib/utils/receipt-pdf";
 import { STORE_CONFIG } from "@/lib/utils/constants";
 import { formatCurrency, formatDateTime } from "@/lib/utils/format";
 import { useTranslations } from "@/lib/i18n/use-translations";
+import { useLocale } from "@/lib/i18n/locale-context";
+import { openReceiptHtmlPrint } from "@/lib/utils/receipt-html";
 import { interpolate } from "@/lib/i18n/locales";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +35,7 @@ export function PaymentDialog({
 }: PaymentDialogProps) {
   const t = useTranslations("payment");
   const tCommon = useTranslations("common");
+  const { locale } = useLocale();
   const items = useCartStore((s) => s.items);
   const customerId = useCartStore((s) => s.customerId);
   const customerName = useCartStore((s) => s.customerName);
@@ -90,43 +93,56 @@ export function PaymentDialog({
 
         toast.success(interpolate(t.saleCompleted, { number: result.saleNumber }));
 
-        // Generate and open receipt PDF
+        // Receipt: Arabic uses HTML print; other locales use jsPDF
         try {
-          const doc = generateReceiptPDF(
-            {
-              saleNumber: result.saleNumber,
-              date: formatDateTime(new Date()),
-              cashierName,
-              customerName: customerName || undefined,
-              items: items.map((item) => ({
-                name: item.name,
-                quantity: item.quantity,
-                unitPrice: item.unitPrice,
-                lineTotal: item.lineTotal,
-              })),
-              subtotal,
-              taxTotal,
-              discountAmount: cartDiscount,
-              total,
-              paymentMethod,
-              amountPaid,
-              changeGiven,
-            },
-            {
-              name: STORE_CONFIG.name,
-              address: STORE_CONFIG.address,
-              phone: STORE_CONFIG.phone,
-              taxId: STORE_CONFIG.taxId || undefined,
-            }
-          );
+          const receiptItems = items.map((item) => {
+            const gross = item.unitPrice * item.quantity;
+            const discountPct =
+              item.discountAmount > 0 && gross > 0
+                ? Math.round((item.discountAmount / gross) * 10000) / 100
+                : undefined;
+            return {
+              name: item.name,
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+              lineTotal: item.lineTotal,
+              discountPct,
+            };
+          });
 
-          const pdfBlob = doc.output("blob");
-          const url = URL.createObjectURL(pdfBlob);
-          const printWindow = window.open(url);
-          if (printWindow) {
-            printWindow.addEventListener("load", () => {
-              printWindow.print();
-            });
+          const payload = {
+            saleNumber: result.saleNumber,
+            date: formatDateTime(new Date()),
+            cashierName,
+            customerName: customerName || undefined,
+            items: receiptItems,
+            subtotal,
+            taxTotal,
+            discountAmount: cartDiscount,
+            total,
+            paymentMethod,
+            amountPaid,
+            changeGiven,
+          };
+          const store = {
+            name: STORE_CONFIG.name,
+            address: STORE_CONFIG.address,
+            phone: STORE_CONFIG.phone,
+            taxId: STORE_CONFIG.taxId || undefined,
+          };
+
+          if (locale === "ar") {
+            openReceiptHtmlPrint(payload, store);
+          } else {
+            const doc = generateReceiptPDF(payload, store);
+            const pdfBlob = doc.output("blob");
+            const url = URL.createObjectURL(pdfBlob);
+            const printWindow = window.open(url);
+            if (printWindow) {
+              printWindow.addEventListener("load", () => {
+                printWindow.print();
+              });
+            }
           }
         } catch (pdfError) {
           console.error(t.receiptError, pdfError);

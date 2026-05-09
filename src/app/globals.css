@@ -140,3 +140,8 @@
     text-align: right;
   }
 }
+
+[dir="rtl"] {
+  font-family: var(--font-noto-arabic), system-ui, sans-serif;
+  letter-spacing: 0;
+}

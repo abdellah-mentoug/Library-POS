@@ -24,7 +24,7 @@ import { useTranslations } from "@/lib/i18n/use-translations";
 interface User {
   id: string;
   full_name: string;
-  email: string;
+  email?: string;
   role: string;
   is_active: boolean;
 }
@@ -159,6 +159,7 @@ export function UserForm({ open, onOpenChange, user }: UserFormProps) {
               <SelectContent>
                 <SelectItem value="admin">{t.admin}</SelectItem>
                 <SelectItem value="employee">{t.employee}</SelectItem>
+                <SelectItem value="stock_operator">{t.stockOperator}</SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -23,7 +23,7 @@ export default async function EditCustomerPage({
   return (
     <div className="mx-auto max-w-2xl space-y-4">
       <h1 className="text-3xl font-bold">{t.editCustomer}</h1>
-      <CustomerForm mode="edit" customer={customer} />
+      <CustomerForm customer={customer} />
     </div>
   );
 }

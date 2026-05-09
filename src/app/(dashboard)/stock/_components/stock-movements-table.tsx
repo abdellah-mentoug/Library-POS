@@ -9,8 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTranslations } from "@/lib/i18n/use-translations";
 import { formatDate } from "@/lib/utils/format";
@@ -48,18 +46,7 @@ export function StockMovementsTable({ stockMovements }: StockMovementsTableProps
         movement.products.barcode.toLowerCase().includes(search.toLowerCase()))
   );
 
-  function getMovementTypeBadge(movementType: string) {
-    switch (movementType) {
-      case "in":
-        return <Badge variant="default">{t.stockEntry || "Entry"}</Badge>;
-      case "out":
-        return <Badge variant="destructive">{t.stockExit || "Exit"}</Badge>;
-      case "adjustment":
-        return <Badge variant="secondary">{t.adjustment || "Adjustment"}</Badge>;
-      default:
-        return <Badge variant="outline">{movementType}</Badge>;
-    }
-  }
+  return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">{t.stockMovements || "Stock Movements"}</h2>
@@ -81,7 +68,7 @@ export function StockMovementsTable({ stockMovements }: StockMovementsTableProps
               <TableHead>{t.quantity || "Quantity"}</TableHead>
               <TableHead>{t.reference || "Reference"}</TableHead>
               <TableHead>{t.notes || "Notes"}</TableHead>
-              <TableHead>{t.createdBy || "By"}</TableHead>
+              <TableHead>{t.createdBy}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

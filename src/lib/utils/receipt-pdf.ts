@@ -10,6 +10,7 @@ interface ReceiptData {
     quantity: number;
     unitPrice: number;
     lineTotal: number;
+    discountPct?: number;
   }[];
   subtotal: number;
   taxTotal: number;
@@ -88,10 +89,14 @@ export function generateReceiptPDF(
 
   // Column headers
   doc.setFontSize(fontSize.small);
+  const colQty = margin + contentWidth * 0.42;
+  const colPrice = margin + contentWidth * 0.58;
+  const colDisc = margin + contentWidth * 0.78;
+  const colTot = margin + contentWidth;
   doc.text("Item", margin, y);
-  doc.text("Qty", margin + contentWidth * 0.55, y, { align: "right" });
-  doc.text("Price", margin + contentWidth * 0.75, y, { align: "right" });
-  doc.text("Total", margin + contentWidth, y, { align: "right" });
+  doc.text("Qty", colQty, y, { align: "right" });
+  doc.text("Price", colPrice, y, { align: "right" });
+  doc.text("Total", colTot, y, { align: "right" });
   y += 3;
   doc.line(margin, y, pageWidth - margin, y);
   y += 3;
@@ -101,13 +106,20 @@ export function generateReceiptPDF(
     const name =
       item.name.length > 22 ? item.name.substring(0, 22) + ".." : item.name;
     doc.text(name, margin, y);
-    doc.text(String(item.quantity), margin + contentWidth * 0.55, y, {
+    doc.text(String(item.quantity), colQty, y, {
       align: "right",
     });
-    doc.text(item.unitPrice.toFixed(2), margin + contentWidth * 0.75, y, {
+    doc.text(item.unitPrice.toFixed(2), colPrice, y, {
       align: "right",
     });
-    doc.text(item.lineTotal.toFixed(2), margin + contentWidth, y, {
+    if (item.discountPct && Number(item.discountPct) > 0) {
+      doc.setTextColor(220, 38, 38);
+      doc.text(`(−${Number(item.discountPct).toFixed(0)}%)`, colDisc, y, {
+        align: "right",
+      });
+      doc.setTextColor(0, 0, 0);
+    }
+    doc.text(item.lineTotal.toFixed(2), colTot, y, {
       align: "right",
     });
     y += 5;
@@ -128,7 +140,13 @@ export function generateReceiptPDF(
 
   printTotal("Subtotal:", data.subtotal);
   if (data.taxTotal > 0) printTotal("Tax:", data.taxTotal);
-  if (data.discountAmount > 0) printTotal("Discount:", -data.discountAmount);
+  if (data.discountAmount > 0) {
+    doc.setTextColor(220, 38, 38);
+    doc.text("Remise:", margin, y);
+    doc.text(`−${data.discountAmount.toFixed(2)}`, margin + contentWidth, y, { align: "right" });
+    doc.setTextColor(0, 0, 0);
+    y += 4;
+  }
 
   // Grand total
   doc.setFontSize(fontSize.title);

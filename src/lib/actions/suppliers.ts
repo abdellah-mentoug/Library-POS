@@ -6,35 +6,44 @@ import { createClient } from "@/lib/supabase/server";
 import { SupplierSchema, isValidUuid } from "@/lib/utils/validation";
 import { revalidatePath } from "next/cache";
 
-export const getSuppliers = authAction(async () => {
+export const getSuppliers = authAction(async (_user) => {
   const supabase = await createClient();
+
   const { data, error } = await supabase
     .from("suppliers")
     .select("*")
     .eq("is_active", true)
     .order("name", { ascending: true });
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    throw new Error(error.message);
+  }
+
   return data;
 });
 
-export async function getSupplier(id: string) {
-  if (!isValidUuid(id)) throw new Error("Invalid supplier ID");
-  return authAction(async () => {
-    const supabase = await createClient();
-    const { data, error } = await supabase
-      .from("suppliers")
-      .select("*")
-      .eq("id", id)
-      .single();
+export const getSupplier = authAction(async (_user, id: string) => {
+  if (!isValidUuid(id)) {
+    throw new Error("Invalid supplier ID");
+  }
 
-    if (error) throw new Error(error.message);
-    return data;
-  });
-}
+  const supabase = await createClient();
 
-export async function createSupplier(formData: FormData) {
-  return adminAction(async () => {
+  const { data, error } = await supabase
+    .from("suppliers")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+});
+
+export const createSupplier = adminAction(
+  async (_user, formData: FormData) => {
     const raw = {
       name: formData.get("name") as string,
       contact_person: (formData.get("contact_person") as string) || undefined,
@@ -45,11 +54,13 @@ export async function createSupplier(formData: FormData) {
     };
 
     const parsed = SupplierSchema.safeParse(raw);
+
     if (!parsed.success) {
       return { error: parsed.error.issues[0].message };
     }
 
     const supabase = createAdminClient();
+
     const { error } = await supabase.from("suppliers").insert({
       name: parsed.data.name,
       contact_person: parsed.data.contact_person || null,
@@ -59,16 +70,21 @@ export async function createSupplier(formData: FormData) {
       notes: parsed.data.notes || null,
     });
 
-    if (error) return { error: error.message };
+    if (error) {
+      return { error: error.message };
+    }
 
     revalidatePath("/suppliers");
     return { success: true };
-  });
-}
+  }
+);
 
-export async function updateSupplier(id: string, formData: FormData) {
-  if (!isValidUuid(id)) return { error: "Invalid supplier ID" };
-  return adminAction(async () => {
+export const updateSupplier = adminAction(
+  async (_user, id: string, formData: FormData) => {
+    if (!isValidUuid(id)) {
+      return { error: "Invalid supplier ID" };
+    }
+
     const raw = {
       name: formData.get("name") as string,
       contact_person: (formData.get("contact_person") as string) || undefined,
@@ -79,11 +95,13 @@ export async function updateSupplier(id: string, formData: FormData) {
     };
 
     const parsed = SupplierSchema.safeParse(raw);
+
     if (!parsed.success) {
       return { error: parsed.error.issues[0].message };
     }
 
     const supabase = createAdminClient();
+
     const { error } = await supabase
       .from("suppliers")
       .update({
@@ -96,26 +114,31 @@ export async function updateSupplier(id: string, formData: FormData) {
       })
       .eq("id", id);
 
-    if (error) return { error: error.message };
+    if (error) {
+      return { error: error.message };
+    }
 
     revalidatePath("/suppliers");
     return { success: true };
-  });
-}
+  }
+);
 
-export async function deleteSupplier(id: string) {
-  if (!isValidUuid(id)) return { error: "Invalid supplier ID" };
-  return adminAction(async () => {
-    const supabase = createAdminClient();
-    // Soft delete
-    const { error } = await supabase
-      .from("suppliers")
-      .update({ is_active: false })
-      .eq("id", id);
+export const deleteSupplier = adminAction(async (_user, id: string) => {
+  if (!isValidUuid(id)) {
+    return { error: "Invalid supplier ID" };
+  }
 
-    if (error) return { error: error.message };
+  const supabase = createAdminClient();
 
-    revalidatePath("/suppliers");
-    return { success: true };
-  });
-}
+  const { error } = await supabase
+    .from("suppliers")
+    .update({ is_active: false })
+    .eq("id", id);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/suppliers");
+  return { success: true };
+});

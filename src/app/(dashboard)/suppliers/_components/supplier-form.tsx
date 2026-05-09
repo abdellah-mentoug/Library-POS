@@ -27,12 +27,12 @@ interface Supplier {
 }
 
 interface SupplierFormProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
   supplier?: Supplier | null;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function SupplierForm({ open, onOpenChange, supplier }: SupplierFormProps) {
+export function SupplierForm({ supplier, open, onOpenChange }: SupplierFormProps) {
   const t = useTranslations("suppliers");
   const tc = useTranslations("common");
   const mode = supplier ? "edit" : "create";
@@ -71,20 +71,13 @@ export function SupplierForm({ open, onOpenChange, supplier }: SupplierFormProps
         toast.success(
           mode === "create" ? t.supplierCreated : t.supplierUpdated
         );
-        onOpenChange(false);
+        // No redirect in dialog mode
       }
     });
   }
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>
-            {mode === "create" ? t.addSupplier : t.editSupplier}
-          </DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+  const formContent = (
+    <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">{t.name}</Label>
             <Input
@@ -159,7 +152,9 @@ export function SupplierForm({ open, onOpenChange, supplier }: SupplierFormProps
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => {
+                // No action in dialog mode
+              }}
             >
               {tc.cancel}
             </Button>
@@ -172,7 +167,22 @@ export function SupplierForm({ open, onOpenChange, supplier }: SupplierFormProps
             </Button>
           </div>
         </form>
-      </DialogContent>
-    </Dialog>
   );
+
+  if (open !== undefined && onOpenChange) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>
+              {supplier ? "Edit Supplier" : t.addSupplier}
+            </DialogTitle>
+          </DialogHeader>
+          {formContent}
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  return formContent;
 }

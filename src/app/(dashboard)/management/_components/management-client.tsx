@@ -6,6 +6,12 @@ import { SupplierTable } from "../../suppliers/_components/supplier-table";
 import { SupplierForm } from "../../suppliers/_components/supplier-form";
 import { CustomerTable } from "../../customers/_components/customer-table";
 import { CustomerForm } from "../../customers/_components/customer-form";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useTranslations } from "@/lib/i18n/use-translations";
@@ -120,11 +126,16 @@ export function ManagementClient({ suppliers, customers }: ManagementClientProps
         supplier={editingSupplier}
       />
 
-      <CustomerForm
-        open={customerFormOpen}
-        onOpenChange={handleCustomerFormClose}
-        customer={editingCustomer}
-      />
+      <Dialog open={customerFormOpen} onOpenChange={handleCustomerFormClose}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>
+              {editingCustomer ? "Edit Customer" : t.addCustomer || "Add Customer"}
+            </DialogTitle>
+          </DialogHeader>
+          <CustomerForm customer={editingCustomer} isDialog={true} />
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

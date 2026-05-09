@@ -425,6 +425,46 @@ export const en = {
     adjustmentType: "Adjustment Type",
     notes: "Notes",
     adjustStockDescription: "Add or remove stock from inventory",
+    totalSkus: "Total SKUs",
+    totalUnits: "Total units",
+    lowStockKpi: "Low stock",
+    outOfStock: "Out of stock",
+    lowStockToggle: "Low stock only",
+    category: "Category",
+    threshold: "Threshold",
+    lastMovement: "Last movement",
+    actions: "Actions",
+    quickEntry: "Entry",
+    quickExit: "Exit",
+    stockEntryPage: "Stock entry",
+    stockExitPage: "Stock removal",
+    stocktakePage: "Inventory count",
+    confirmInventory: "Confirm inventory",
+    systemQty: "System qty",
+    countedQty: "Counted qty",
+    exitReasonGeneric: "Removal",
+    stocktakeSuccess: "{count} product(s) updated",
+    stockEntrySuccess: "Stock entry recorded",
+    stockExitSuccess: "Stock removal recorded",
+    noProducts: "No products match your filters.",
+    backToStock: "Back to stock",
+    stockExitExceeds: "Quantity exceeds available stock",
+    createdBy: "By",
+  },
+
+  stockHistory: {
+    title: "Stock history",
+    filterReason: "Reason",
+    allReasons: "All reasons",
+    startDate: "Start date",
+    endDate: "End date",
+    reset: "Reset",
+    operator: "Operator",
+    referenceType: "Reference",
+    dateTime: "Date / time",
+    movement: "Movement",
+    productLink: "Product",
+    noMovements: "No movements found.",
   },
 
   printOrders: {
@@ -586,6 +626,8 @@ export const en = {
     role: "Role",
     admin: "Admin",
     employee: "Employee",
+    stockOperator: "Seller / Stock",
+    stockOperatorDesc: "POS and stock management only",
     allFieldsRequired: "All fields are required",
     passwordMinLength: "Password must be at least 6 characters",
     nameRequired: "Name is required",
@@ -605,6 +647,93 @@ export const en = {
     receiptFooter: "Receipt Footer",
     receiptDisclaimer: "Receipt Disclaimer",
     configEditNote: "To update these values, edit the configuration in",
+  },
+
+  creditAccounts: {
+    title: "Credit Accounts",
+    description: "Track account balances, payment follow-up, and customer credit health.",
+    badge: "Credit Management",
+    hint: "Professional module preview with aligned dashboard styling.",
+    stats: {
+      activeAccounts: "Active accounts",
+      openBalance: "Open balance",
+      overdue: "Overdue",
+    },
+    table: {
+      title: "Recent credit activity",
+      columns: {
+        name: "Account",
+        status: "Status",
+        amount: "Balance",
+      },
+    },
+    status: {
+      active: "Active",
+      pending: "Pending",
+      review: "Review",
+    },
+    actions: {
+      newAccount: "Create account",
+      viewCustomers: "View customers",
+    },
+  },
+
+  invoices: {
+    title: "Invoices",
+    description: "Organize invoice lifecycle, monitor unpaid documents, and keep records clean.",
+    badge: "Billing Desk",
+    hint: "Consistent cards, table spacing, and interaction polish.",
+    stats: {
+      thisMonth: "This month",
+      unpaid: "Unpaid invoices",
+      avgValue: "Average value",
+    },
+    table: {
+      title: "Latest invoices",
+      columns: {
+        name: "Invoice",
+        status: "Status",
+        amount: "Amount",
+      },
+    },
+    status: {
+      paid: "Paid",
+      unpaid: "Unpaid",
+      partial: "Partial",
+    },
+    actions: {
+      newInvoice: "Create invoice",
+      openSales: "Open sales",
+    },
+  },
+
+  quotes: {
+    title: "Quotes",
+    description: "Prepare professional quotes and monitor conversion opportunities.",
+    badge: "Quotation Center",
+    hint: "Subtle motion, elegant accents, and responsive layout.",
+    stats: {
+      activeQuotes: "Active quotes",
+      conversionRate: "Conversion rate",
+      expiringSoon: "Expiring soon",
+    },
+    table: {
+      title: "Current quotes",
+      columns: {
+        name: "Quote",
+        status: "Status",
+        amount: "Amount",
+      },
+    },
+    status: {
+      draft: "Draft",
+      sent: "Sent",
+      approved: "Approved",
+    },
+    actions: {
+      newQuote: "Create quote",
+      openCustomers: "Open customers",
+    },
   },
 
   errors: {

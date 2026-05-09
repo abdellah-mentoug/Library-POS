@@ -426,7 +426,48 @@ export const fr: Messages = {
     adjustmentType: "Type d'ajustement",
     notes: "Notes",
     adjustStockDescription: "Ajouter ou retirer du stock de l'inventaire",
+    totalSkus: "Références (SKU)",
+    totalUnits: "Unités totales",
+    lowStockKpi: "Stock faible",
+    outOfStock: "Rupture",
+    lowStockToggle: "Stock faible uniquement",
+    category: "Catégorie",
+    threshold: "Seuil",
+    lastMovement: "Dernier mouvement",
+    actions: "Actions",
+    quickEntry: "Entrée",
+    quickExit: "Sortie",
+    stockEntryPage: "Entrée stock",
+    stockExitPage: "Sortie stock",
+    stocktakePage: "Inventaire",
+    confirmInventory: "Confirmer l'inventaire",
+    systemQty: "Qté système",
+    countedQty: "Qté comptée",
+    exitReasonGeneric: "Sortie",
+    stocktakeSuccess: "{count} produit(s) mis à jour",
+    stockEntrySuccess: "Entrée enregistrée",
+    stockExitSuccess: "Sortie enregistrée",
+    noProducts: "Aucun produit ne correspond aux filtres.",
+    backToStock: "Retour au stock",
+    stockExitExceeds: "La quantité dépasse le stock disponible",
+    createdBy: "Par",
   },
+
+  stockHistory: {
+    title: "Historique du stock",
+    filterReason: "Raison",
+    allReasons: "Toutes les raisons",
+    startDate: "Date début",
+    endDate: "Date fin",
+    reset: "Réinitialiser",
+    operator: "Opérateur",
+    referenceType: "Référence",
+    dateTime: "Date / heure",
+    movement: "Mouvement",
+    productLink: "Produit",
+    noMovements: "Aucun mouvement.",
+  },
+
   printOrders: {
     title: "Commandes d'impression",
     newOrder: "Nouvelle commande",
@@ -586,6 +627,8 @@ export const fr: Messages = {
     role: "Rôle",
     admin: "Administrateur",
     employee: "Employé",
+    stockOperator: "Vendeur / Stock",
+    stockOperatorDesc: "Caisse et gestion du stock uniquement",
     allFieldsRequired: "Tous les champs sont obligatoires",
     passwordMinLength: "Le mot de passe doit contenir au moins 6 caractères",
     nameRequired: "Le nom est obligatoire",
@@ -605,6 +648,93 @@ export const fr: Messages = {
     receiptFooter: "Pied de page du reçu",
     receiptDisclaimer: "Mention légale du reçu",
     configEditNote: "Pour modifier ces valeurs, éditez la configuration dans",
+  },
+
+  creditAccounts: {
+    title: "Comptes credit",
+    description: "Suivez les soldes clients, les relances de paiement et la sante des comptes.",
+    badge: "Gestion credit",
+    hint: "Apercu professionnel aligne avec le design du tableau de bord.",
+    stats: {
+      activeAccounts: "Comptes actifs",
+      openBalance: "Solde ouvert",
+      overdue: "En retard",
+    },
+    table: {
+      title: "Activite recente",
+      columns: {
+        name: "Compte",
+        status: "Statut",
+        amount: "Solde",
+      },
+    },
+    status: {
+      active: "Actif",
+      pending: "En attente",
+      review: "A verifier",
+    },
+    actions: {
+      newAccount: "Creer un compte",
+      viewCustomers: "Voir les clients",
+    },
+  },
+
+  invoices: {
+    title: "Factures",
+    description: "Gerez le cycle de facturation, suivez les impayes et gardez des dossiers propres.",
+    badge: "Bureau facturation",
+    hint: "Cartes, tableaux et interactions harmonises avec le dashboard.",
+    stats: {
+      thisMonth: "Ce mois",
+      unpaid: "Factures impayees",
+      avgValue: "Valeur moyenne",
+    },
+    table: {
+      title: "Dernieres factures",
+      columns: {
+        name: "Facture",
+        status: "Statut",
+        amount: "Montant",
+      },
+    },
+    status: {
+      paid: "Payee",
+      unpaid: "Impayee",
+      partial: "Partielle",
+    },
+    actions: {
+      newInvoice: "Creer une facture",
+      openSales: "Voir les ventes",
+    },
+  },
+
+  quotes: {
+    title: "Devis",
+    description: "Preparez des devis professionnels et suivez les opportunites de conversion.",
+    badge: "Centre devis",
+    hint: "Animations discretes, accents elegants et mise en page responsive.",
+    stats: {
+      activeQuotes: "Devis actifs",
+      conversionRate: "Taux de conversion",
+      expiringSoon: "Expiration proche",
+    },
+    table: {
+      title: "Devis en cours",
+      columns: {
+        name: "Devis",
+        status: "Statut",
+        amount: "Montant",
+      },
+    },
+    status: {
+      draft: "Brouillon",
+      sent: "Envoye",
+      approved: "Approuve",
+    },
+    actions: {
+      newQuote: "Creer un devis",
+      openCustomers: "Voir les clients",
+    },
   },
 
   errors: {

@@ -31,7 +31,7 @@ const NAV: NavGroup[] = [
   {
     group: 'Principal',
     items: [
-      { href: '/dashboard',  label: 'Tableau de bord', icon: LayoutDashboard, roles: ['admin','employee','stock_operator'] },
+      { href: '/',  label: 'Tableau de bord', icon: LayoutDashboard, roles: ['admin','employee','stock_operator'] },
       { href: '/pos',        label: 'Caisse / POS',    icon: ShoppingCart,    roles: ['admin','employee','stock_operator'] },
     ],
   },
@@ -62,16 +62,15 @@ const NAV: NavGroup[] = [
   {
     group: 'Documents',
     items: [
-      { href: '/devis',          label: 'Devis',            icon: FileText,  roles: ['admin'] },
-      { href: '/devis/bdc',      label: 'Bons de commande', icon: ShoppingBag, roles: ['admin'] },
-      { href: '/devis/factures', label: 'Factures',         icon: BookOpen,  roles: ['admin'] },
+      { href: '/quotes',         label: 'Devis',            icon: FileText,  roles: ['admin'] },
+      { href: '/invoices',       label: 'Factures',         icon: BookOpen,  roles: ['admin'] },
     ],
   },
   {
     group: 'Clients & Crédit',
     items: [
       { href: '/customers', label: 'Clients',         icon: Users,       roles: ['admin','employee'] },
-      { href: '/credits',   label: 'Comptes crédit',  icon: CreditCard,  roles: ['admin'] },
+      { href: '/credit-accounts', label: 'Comptes crédit',  icon: CreditCard,  roles: ['admin'] },
     ],
   },
   {
@@ -104,7 +103,7 @@ export function Sidebar({ userRole, storeName = 'Library POS' }: SidebarProps) {
   const pathname = usePathname();
 
   function isActive(href: string) {
-    if (href === '/dashboard') return pathname === '/dashboard';
+    if (href === '/') return pathname === '/';
     return pathname.startsWith(href);
   }
 

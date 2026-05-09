@@ -426,7 +426,48 @@ export const ar: Messages = {
     adjustmentType: "نوع التعديل",
     notes: "ملاحظات",
     adjustStockDescription: "إضافة أو إزالة مخزون من المخزون",
+    totalSkus: "إجمالي الأصناف",
+    totalUnits: "إجمالي الوحدات",
+    lowStockKpi: "مخزون منخفض",
+    outOfStock: "نفاد",
+    lowStockToggle: "منخفض فقط",
+    category: "الفئة",
+    threshold: "الحد الأدنى",
+    lastMovement: "آخر حركة",
+    actions: "إجراءات",
+    quickEntry: "دخول",
+    quickExit: "خروج",
+    stockEntryPage: "إدخال مخزون",
+    stockExitPage: "إخراج مخزون",
+    stocktakePage: "جرد",
+    confirmInventory: "تأكيد الجرد",
+    systemQty: "كمية النظام",
+    countedQty: "الكمية المعدودة",
+    exitReasonGeneric: "إخراج",
+    stocktakeSuccess: "تم تحديث {count} منتج(ات)",
+    stockEntrySuccess: "تم تسجيل الإدخال",
+    stockExitSuccess: "تم تسجيل الإخراج",
+    noProducts: "لا توجد منتجات مطابقة.",
+    backToStock: "العودة للمخزون",
+    stockExitExceeds: "الكمية تتجاوز المخزون المتاح",
+    createdBy: "بواسطة",
   },
+
+  stockHistory: {
+    title: "سجل المخزون",
+    filterReason: "السبب",
+    allReasons: "كل الأسباب",
+    startDate: "من تاريخ",
+    endDate: "إلى تاريخ",
+    reset: "إعادة تعيين",
+    operator: "المشغّل",
+    referenceType: "المرجع",
+    dateTime: "التاريخ / الوقت",
+    movement: "الحركة",
+    productLink: "المنتج",
+    noMovements: "لا توجد حركات.",
+  },
+
   printOrders: {
     title: "طلبات الطباعة",
     newOrder: "طلب طباعة جديد",
@@ -586,6 +627,8 @@ export const ar: Messages = {
     role: "الدور",
     admin: "مسؤول",
     employee: "موظف",
+    stockOperator: "بائع / مخزون",
+    stockOperatorDesc: "نقطة البيع وإدارة المخزون فقط",
     allFieldsRequired: "جميع الحقول مطلوبة",
     passwordMinLength: "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
     nameRequired: "الاسم مطلوب",
@@ -605,6 +648,93 @@ export const ar: Messages = {
     receiptFooter: "تذييل الإيصال",
     receiptDisclaimer: "خلاف المسؤولية في الإيصال",
     configEditNote: "لتحديث هذه القيم، عدّل التكوين في",
+  },
+
+  creditAccounts: {
+    title: "حسابات الائتمان",
+    description: "متابعة الارصدة، التحصيل، وصحة حسابات العملاء.",
+    badge: "ادارة الائتمان",
+    hint: "واجهة متناسقة مع تصميم لوحة التحكم.",
+    stats: {
+      activeAccounts: "حسابات نشطة",
+      openBalance: "رصيد مفتوح",
+      overdue: "متاخر",
+    },
+    table: {
+      title: "اخر نشاط",
+      columns: {
+        name: "الحساب",
+        status: "الحالة",
+        amount: "الرصيد",
+      },
+    },
+    status: {
+      active: "نشط",
+      pending: "قيد الانتظار",
+      review: "مراجعة",
+    },
+    actions: {
+      newAccount: "انشاء حساب",
+      viewCustomers: "عرض العملاء",
+    },
+  },
+
+  invoices: {
+    title: "الفواتير",
+    description: "تنظيم دورة الفوترة ومتابعة الفواتير غير المدفوعة.",
+    badge: "مكتب الفوترة",
+    hint: "تنسيق موحد للبطاقات والجداول والتفاعلات.",
+    stats: {
+      thisMonth: "هذا الشهر",
+      unpaid: "فواتير غير مدفوعة",
+      avgValue: "متوسط القيمة",
+    },
+    table: {
+      title: "احدث الفواتير",
+      columns: {
+        name: "الفاتورة",
+        status: "الحالة",
+        amount: "المبلغ",
+      },
+    },
+    status: {
+      paid: "مدفوع",
+      unpaid: "غير مدفوع",
+      partial: "جزئي",
+    },
+    actions: {
+      newInvoice: "انشاء فاتورة",
+      openSales: "عرض المبيعات",
+    },
+  },
+
+  quotes: {
+    title: "عروض السعر",
+    description: "اعداد عروض سعر احترافية ومتابعة فرص التحويل.",
+    badge: "مركز العروض",
+    hint: "حركة خفيفة والوان هادئة وتخطيط متجاوب.",
+    stats: {
+      activeQuotes: "عروض نشطة",
+      conversionRate: "معدل التحويل",
+      expiringSoon: "تنتهي قريبا",
+    },
+    table: {
+      title: "العروض الحالية",
+      columns: {
+        name: "العرض",
+        status: "الحالة",
+        amount: "المبلغ",
+      },
+    },
+    status: {
+      draft: "مسودة",
+      sent: "مرسل",
+      approved: "معتمد",
+    },
+    actions: {
+      newQuote: "انشاء عرض",
+      openCustomers: "عرض العملاء",
+    },
   },
 
   errors: {

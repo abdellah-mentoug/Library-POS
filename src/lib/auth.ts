@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
-export type UserRole = "admin" | "employee";
+export type UserRole = "admin" | "employee" | "stock_operator";
 
 export interface AuthUser {
   id: string;
@@ -38,4 +38,9 @@ export async function requireAdmin(): Promise<AuthUser> {
   const user = await getAuthUser();
   if (user.role !== "admin") redirect("/");
   return user;
+}
+
+/** Any authenticated dashboard user (alias for getAuthUser). */
+export async function requireAuth(): Promise<AuthUser> {
+  return getAuthUser();
 }

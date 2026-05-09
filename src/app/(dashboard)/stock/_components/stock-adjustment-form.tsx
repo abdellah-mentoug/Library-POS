@@ -45,6 +45,11 @@ const stockAdjustmentSchema = z.object({
 
 type StockAdjustmentFormData = z.infer<typeof stockAdjustmentSchema>;
 
+interface ProductOption {
+  id: string;
+  name: string;
+}
+
 interface StockAdjustmentFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -53,7 +58,7 @@ interface StockAdjustmentFormProps {
 export function StockAdjustmentForm({ open, onOpenChange }: StockAdjustmentFormProps) {
   const t = useTranslations("stock");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<ProductOption[]>([]);
 
   const form = useForm<StockAdjustmentFormData>({
     resolver: zodResolver(stockAdjustmentSchema),
@@ -70,7 +75,7 @@ export function StockAdjustmentForm({ open, onOpenChange }: StockAdjustmentFormP
     async function loadProducts() {
       try {
         const data = await getProducts();
-        setProducts(data);
+        setProducts((data as ProductOption[]) || []);
       } catch (error) {
         console.error("Failed to load products:", error);
         toast.error("Failed to load products");
@@ -100,6 +105,7 @@ export function StockAdjustmentForm({ open, onOpenChange }: StockAdjustmentFormP
         onOpenChange(false);
       }
     } catch (error) {
+      console.error(error);
       toast.error("An unexpected error occurred");
     } finally {
       setIsSubmitting(false);

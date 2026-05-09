@@ -163,3 +163,25 @@ export function authAction(actionFn: (user: CurrentUser, ...args: readonly unkno
     return actionFn(user, ...args);
   };
 }
+
+/** Admin or stock_operator — stock mutations and stock-area reads */
+export function stockAccessAction<T extends readonly unknown[], R>(
+  actionFn: (user: CurrentUser, ...args: T) => Promise<R>
+): (...args: T) => Promise<R>;
+export function stockAccessAction(
+  actionFn: (user: CurrentUser, ...args: readonly unknown[]) => Promise<unknown>
+) {
+  return async (...args: readonly unknown[]): Promise<unknown> => {
+    const user = await requireStockAccess();
+    return actionFn(user, ...args);
+  };
+}
+
+/** Dashboard routes: only admin and stock_operator */
+export async function requireStockPageAccess(): Promise<CurrentUser> {
+  const user = await getCurrentUser();
+  if (!user) redirect('/login');
+  if (!user.is_active) redirect('/login');
+  if (user.role !== 'admin' && user.role !== 'stock_operator') redirect('/');
+  return user;
+}

@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono, Noto_Sans_Arabic } from 'next/font/google';
 import './globals.css';
 import { getLocale } from '@/lib/i18n/get-locale';
+import { isRTL } from '@/lib/i18n/locales';
 import { LocaleProvider } from '@/lib/i18n/locale-context';
 
 const geistSans = Geist({
@@ -35,7 +36,7 @@ export default async function RootLayout({
 }) {
   // جلب اللغة الحالية من السيرفر أو الكوكيز
   const locale = await getLocale();
-  const dir = locale === 'ar' ? 'rtl' : 'ltr';
+  const dir = isRTL(locale) ? 'rtl' : 'ltr';
 
   return (
     <html lang={locale} dir={dir} suppressHydrationWarning>

@@ -10,7 +10,7 @@ import { useTranslations } from "@/lib/i18n/use-translations";
 interface User {
   id: string;
   full_name: string;
-  email: string;
+  email?: string;
   role: string;
   is_active: boolean;
   created_at: string;
