@@ -25,9 +25,7 @@ type ActionResult =
   | { success: true }
   | { error: string };
 
-export async function createCategory(
-  data: unknown
-): Promise<ActionResult> {
+export async function createCategory(data: unknown): Promise<ActionResult> {
   const parsed = CategorySchema.safeParse(data);
 
   if (!parsed.success) {
@@ -62,6 +60,22 @@ export async function updateCategory(
   const { error } = await supabase
     .from("categories")
     .update(parsed.data)
+    .eq("id", id);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/categories");
+
+  return { success: true };
+}
+
+/* ✅ FIX: function li ناقص */
+export async function deleteCategory(id: string): Promise<ActionResult> {
+  const supabase = createAdminClient();
+
+  const { error } = await supabase
+    .from("categories")
+    .delete()
     .eq("id", id);
 
   if (error) return { error: error.message };
