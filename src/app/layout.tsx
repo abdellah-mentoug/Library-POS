@@ -6,6 +6,7 @@ import './globals.css';
 import { getLocale } from '@/lib/i18n/get-locale';
 import { isRTL } from '@/lib/i18n/locales';
 import { LocaleProvider } from '@/lib/i18n/locale-context';
+import { ThemeProvider } from 'next-themes';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -43,10 +44,16 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${notoArabic.variable} antialiased`}
       >
-        {/* LocaleProvider يغلف جميع الأطفال */}
-        <LocaleProvider initialLocale={locale}>
-          {children}
-        </LocaleProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange={false}
+        >
+          <LocaleProvider initialLocale={locale}>
+            {children}
+          </LocaleProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -29,9 +29,9 @@ export default async function QuotesPage() {
       tableTitle={t.table.title}
       tableColumns={t.table.columns}
       tableRows={[
-        { name: "Q-2026-118", status: t.status.draft, amount: "€390" },
-        { name: "Q-2026-119", status: t.status.sent, amount: "€1,080" },
-        { name: "Q-2026-120", status: t.status.approved, amount: "€650" },
+        { name: "Q-2026-118", status: t.status.draft, amount: "39 MAD" },
+        { name: "Q-2026-119", status: t.status.sent, amount: "108 MAD" },
+        { name: "Q-2026-120", status: t.status.approved, amount: "65 MAD" },
       ]}
       actions={{
         primaryLabel: t.actions.newQuote,

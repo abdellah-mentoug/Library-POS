@@ -11,11 +11,15 @@ export default async function DashboardLayout({
   const user = await getAuthUser();
 
   return (
-    <div className="flex h-screen">
+    <div className="flex min-h-screen bg-background text-foreground transition-colors duration-300">
       <Sidebar userRole={user.role} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar user={user} />
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto p-8 animate-fade-in">
+          <div className="max-w-7xl mx-auto">
+            {children}
+          </div>
+        </main>
       </div>
       <Toaster />
     </div>
